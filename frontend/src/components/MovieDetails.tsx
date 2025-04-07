@@ -41,7 +41,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
 					</div>
 
 					<div className="flex gap-4 mb-8">
-						<button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-6 py-3 rounded-md font-semibold transition-colors">
+						<button className="niche-blue-bkg flex items-center gap-2 px-6 py-3 rounded-md font-semibold transition-colors">
 							<Play className="w-5 h-5" />
 							Play
 						</button>
