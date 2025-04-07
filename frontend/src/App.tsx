@@ -5,12 +5,14 @@ import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import MoviesPage from "./pages/MoviesPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
 	return (
 		<Router>
 			<div className="page-bkg min-h-screen text-gray-100 flex flex-col">
 				<Header />
+				<ScrollToTop />
 				<main className="flex-grow">
 					<Routes>
 						<Route path="/" element={<LandingPage />} />
