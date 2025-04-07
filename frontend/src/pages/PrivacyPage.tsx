@@ -2,7 +2,12 @@ const PrivacyPage = () => {
 	return (
 		<div className="min-h-screen pt-20 pb-12">
 			<div className="container mx-auto px-4 max-w-3xl">
-				<h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
+				<h1
+					className="text-4xl font-bold mb-8"
+					style={{ marginTop: "10px" }}
+				>
+					Privacy Policy
+				</h1>
 
 				<div className="prose prose-invert">
 					<section className="mb-8">
