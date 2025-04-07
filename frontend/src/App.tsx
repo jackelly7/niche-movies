@@ -6,6 +6,7 @@ import AuthPage from "./pages/AuthPage";
 import MoviesPage from "./pages/MoviesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ScrollToTop from "./components/ScrollToTop";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
 	return (
@@ -18,6 +19,7 @@ function App() {
 						<Route path="/" element={<LandingPage />} />
 						<Route path="/auth" element={<AuthPage />} />
 						<Route path="/movies" element={<MoviesPage />} />
+						<Route path="/admin" element={<AdminPage />} />
 						<Route path="/privacy" element={<PrivacyPage />} />
 					</Routes>
 				</main>
