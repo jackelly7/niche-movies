@@ -1,14 +1,12 @@
 import { Link } from "react-router-dom";
-import { Film } from "lucide-react";
 
 const Footer = () => {
 	return (
-		<footer className="bg-gray-900 border-t border-gray-800 py-12">
+		<footer className="page-bkg border-t border-gray-800 py-12">
 			<div className="container mx-auto px-4">
 				<div className="grid grid-cols-1 md:grid-cols-4 gap-8">
 					<div className="col-span-1">
 						<Link to="/" className="flex items-center space-x-2">
-							<Film className="w-8 h-8 text-red-600" />
 							<span className="text-xl font-bold">
 								Niche Movies
 							</span>
@@ -26,7 +24,7 @@ const Footer = () => {
 							<li>
 								<Link
 									to="/"
-									className="hover:text-red-500 transition-colors"
+									className="niche-blue-hover-dark transition-colors"
 								>
 									Home
 								</Link>
@@ -34,7 +32,7 @@ const Footer = () => {
 							<li>
 								<Link
 									to="/movies"
-									className="hover:text-red-500 transition-colors"
+									className="niche-blue-hover-dark transition-colors"
 								>
 									Movies
 								</Link>
@@ -42,7 +40,7 @@ const Footer = () => {
 							<li>
 								<Link
 									to="/auth"
-									className="hover:text-red-500 transition-colors"
+									className="niche-blue-hover-dark transition-colors"
 								>
 									Sign In
 								</Link>
@@ -56,7 +54,7 @@ const Footer = () => {
 							<li>
 								<Link
 									to="/privacy"
-									className="hover:text-red-500 transition-colors"
+									className="niche-blue-hover-dark transition-colors"
 								>
 									Privacy Policy
 								</Link>
@@ -64,7 +62,7 @@ const Footer = () => {
 							<li>
 								<Link
 									to="/terms"
-									className="hover:text-red-500 transition-colors"
+									className="niche-blue-hover-dark transition-colors"
 								>
 									Terms of Service
 								</Link>

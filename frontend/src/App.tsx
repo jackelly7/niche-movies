@@ -9,7 +9,7 @@ import PrivacyPage from "./pages/PrivacyPage";
 function App() {
 	return (
 		<Router>
-			<div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col">
+			<div className="page-bkg min-h-screen text-gray-100 flex flex-col">
 				<Header />
 				<main className="flex-grow">
 					<Routes>

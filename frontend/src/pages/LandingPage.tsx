@@ -9,7 +9,7 @@ const LandingPage = () => {
 				className="min-h-screen pt-20 flex items-center"
 				style={{
 					backgroundImage:
-						'linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url("https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=2850&q=80")',
+						'linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url("img/theater.jpeg")',
 					backgroundSize: "cover",
 					backgroundPosition: "center",
 				}}
@@ -27,7 +27,7 @@ const LandingPage = () => {
 						<div className="flex flex-col sm:flex-row gap-4">
 							<Link
 								to="/auth"
-								className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-md font-semibold flex items-center justify-center transition-colors"
+								className="niche-blue-bkg text-white px-8 py-3 rounded-md font-semibold flex items-center justify-center transition-colors"
 							>
 								<Play className="w-5 h-5 mr-2" />
 								Start Watching Now
@@ -44,7 +44,7 @@ const LandingPage = () => {
 			</section>
 
 			{/* Features Section */}
-			<section className="py-20 bg-gray-900">
+			<section className="page-bkg py-20">
 				<div className="container mx-auto px-4">
 					<h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
 						Why Choose Niche Movies?

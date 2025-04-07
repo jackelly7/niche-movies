@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Film, Search, User, Menu, X } from "lucide-react";
+import { Search, User, Menu, X } from "lucide-react";
 
 const Header = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -8,12 +8,15 @@ const Header = () => {
 	const isAuthPage = location.pathname === "/auth";
 
 	return (
-		<header className="fixed top-0 w-full bg-gray-900/95 backdrop-blur-sm z-50 border-b border-gray-800">
+		<header className="page-bkg fixed top-0 w-full backdrop-blur-sm z-50 border-b border-gray-800">
 			<div className="container mx-auto px-4 py-4">
 				<div className="flex items-center justify-between">
 					<Link to="/" className="flex items-center space-x-2">
-						<Film className="w-8 h-8 text-red-600" />
-						<span className="text-xl font-bold">Niche Movies</span>
+						<img
+							src="img/logos/niche-logo.png"
+							alt="niche movies"
+							className="niche-logo"
+						/>
 					</Link>
 
 					{/* Desktop Navigation */}
@@ -22,16 +25,16 @@ const Header = () => {
 							<>
 								<Link
 									to="/movies"
-									className="hover:text-red-500 transition-colors"
+									className="niche-blue-hover-dark transition-colors"
 								>
 									Movies
 								</Link>
-								<button className="hover:text-red-500 transition-colors">
+								<button className="niche-blue-hover-dark transition-colors">
 									<Search className="w-5 h-5" />
 								</button>
 								<Link
 									to="/auth"
-									className="flex items-center space-x-1 hover:text-red-500 transition-colors"
+									className="flex items-center space-x-1 niche-blue-hover-dark transition-colors"
 								>
 									<User className="w-5 h-5" />
 									<span>Sign In</span>
@@ -61,17 +64,17 @@ const Header = () => {
 								<>
 									<Link
 										to="/movies"
-										className="hover:text-red-500 transition-colors"
+										className="niche-blue-hover-dark transition-colors"
 										onClick={() => setIsMenuOpen(false)}
 									>
 										Movies
 									</Link>
-									<button className="hover:text-red-500 transition-colors text-left">
+									<button className="niche-blue-hover-dark transition-colors text-left">
 										Search
 									</button>
 									<Link
 										to="/auth"
-										className="hover:text-red-500 transition-colors"
+										className="niche-blue-hover-dark transition-colors"
 										onClick={() => setIsMenuOpen(false)}
 									>
 										Sign In

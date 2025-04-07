@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.page-bkg {
+	background-color: #111111;
+}
+
+.niche-logo {
+	width: 200px;
+	margin: -10px;
+}
+
+.niche-blue-bkg {
+	background-color: #3453c7;
+}
+
+.niche-blue-bkg:hover {
+	background-color: #9db2ff;
+}
+
+.niche-blue-bkg-dark {
+	background-color: #3453c7;
+}
+
+.niche-blue-bkg-light {
+	background-color: #9db2ff;
+}
+
+.niche-blue-hover-dark:hover {
+	color: #3453c7;
+}
+
+.niche-blue-hover-light:hover {
+	color: #9db2ff;
+}
+
+.account-sign-text {
+	color: #3453c7;
+}
+
+.account-sign-text:hover {
+	color: #9db2ff;
+}
+
+.input-border-hover-blue-dark:hover,
+.input-border-hover-blue-dark:focus {
+	border: 3px solid #3453c7;
+}
+
+.input-border-hover-blue-light:hover,
+.input-border-hover-blue-light:focus {
+	border: 3px solid #9db2ff;
+}
+
+.input-group {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin: 0 auto;
+	padding: 0 10px;
+	width: 100%;
+}
