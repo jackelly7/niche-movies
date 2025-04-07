@@ -1,0 +1,17 @@
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor swap/backup/temp files
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# IDE/Editor folders (just in case someone accidentally creates one in root)
+.vscode/
+.idea/
