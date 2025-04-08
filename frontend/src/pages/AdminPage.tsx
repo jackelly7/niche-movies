@@ -6,13 +6,11 @@ import axios from "axios";
 interface Movie {
   id: string;
   title: string;
-  posterUrl: string;
-  year: number;
+  releaseYear: number;
   rating: string;
   description: string;
   duration: string;
   cast: string;
-  genre: string;
 }
 
 const AdminPage = () => {
@@ -37,7 +35,7 @@ const AdminPage = () => {
   useEffect(() => {
     async function fetchMovies() {
       try {
-        const response = await axios.get("https://localhost:4000/api/movies");
+        const response = await axios.get("https://localhost:4000/AllMovies");
         setMovies(response.data);
       } catch (error) {
         console.error("Error fetching movies:", error);
@@ -90,11 +88,11 @@ const AdminPage = () => {
           ...formData,
         };
 
-        await axios.post("https://localhost:4000/api/movies", newMovie);
+        await axios.post("https://localhost:4000/movies", newMovie);
       }
 
       // After save, re-fetch the updated movie list
-      const response = await axios.get("https://localhost:4000/api/movies");
+      const response = await axios.get("https://localhost:4000/movies");
       setMovies(response.data);
 
       handleCloseModal();
@@ -130,31 +128,18 @@ const AdminPage = () => {
               <tr className="bg-gray-700">
                 <th className="px-6 py-3 text-left">Movie</th>
                 <th className="px-6 py-3 text-left">Year</th>
-                <th className="px-6 py-3 text-left">Rating</th>
-                <th className="px-6 py-3 text-left">Genre</th>
-                <th className="px-6 py-3 text-right">Actions</th>
+                <th className="px-6 py-3 text-center">Rating</th>
+                <th className="px-6 py-3 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {movies.map((movie) => (
                 <tr key={movie.id} className="border-t border-gray-700">
+                  <td className="px-6 py-4">{movie.title}</td>
+                  <td className="px-6 py-4">{movie.releaseYear}</td>
+                  <td className="px-6 py-4 text-center">{movie.rating}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-16 rounded overflow-hidden">
-                        <img
-                          src={movie.posterUrl}
-                          alt={movie.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <span className="font-medium">{movie.title}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">{movie.year}</td>
-                  <td className="px-6 py-4">{movie.rating}</td>
-                  <td className="px-6 py-4">{movie.genre}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-center gap-2">
                       <button
                         onClick={() => handleOpenModal(movie)}
                         className="p-2 hover:bg-gray-700 rounded-md transition-colors"
@@ -211,24 +196,6 @@ const AdminPage = () => {
                 />
               </div>
 
-              <div>
-                <label
-                  htmlFor="posterUrl"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Poster URL
-                </label>
-                <input
-                  type="url"
-                  id="posterUrl"
-                  name="posterUrl"
-                  value={formData.posterUrl || ""}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                  required
-                />
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label
@@ -241,7 +208,7 @@ const AdminPage = () => {
                     type="number"
                     id="year"
                     name="year"
-                    value={formData.year || ""}
+                    value={formData.releaseYear || ""}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                     required
@@ -315,24 +282,6 @@ const AdminPage = () => {
                   id="cast"
                   name="cast"
                   value={formData.cast || ""}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="genre"
-                  className="block text-sm font-medium mb-1"
-                >
-                  Genre
-                </label>
-                <input
-                  type="text"
-                  id="genre"
-                  name="genre"
-                  value={formData.genre || ""}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
