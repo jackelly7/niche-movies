@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MovieDetails from "../components/MovieDetails";
-
 interface Movie {
   id: string;
   title: string;
@@ -9,7 +8,6 @@ interface Movie {
   year: number;
   rating: string;
 }
-
 const MoviesPage = () => {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [posters, setPosters] = useState<string[]>([]);
@@ -149,5 +147,4 @@ const MoviesPage = () => {
   //   </div>
   // );
 };
-
 export default MoviesPage;
