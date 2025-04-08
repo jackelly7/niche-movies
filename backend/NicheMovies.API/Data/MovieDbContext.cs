@@ -7,9 +7,6 @@ public class MovieDbContext: DbContext
     {
         
     }
-
-    // ema changed this from public DbSet<Movie> Movies { get; set; } // keep this
-
     public DbSet<Movie> Movies { get; set; }
     public DbSet<MoviesUsers> MovieUser { get; set; }
 
