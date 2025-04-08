@@ -1,11 +1,9 @@
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using NicheMovies.API.Data;
 
 namespace NicheMovies.API.Controllers
 {
-    [Route("/api")]
+    [Route("")]
     [ApiController]
     public class MovieController : ControllerBase
     {
@@ -16,48 +14,64 @@ namespace NicheMovies.API.Controllers
             _movieContext = context;
         }
 
-        [HttpPost("register")]
+        [HttpPost("/register")]
         public IActionResult Register([FromBody] RegisterRequest request)
         {
-            if (_movieContext.MovieUsers.Any(u => u.Email == request.Email))
+            try
             {
-                return BadRequest(new { message = "Email already registered." });
+                if (_movieContext.MovieUser.Any(u => u.Email == request.Email))
+                {
+                    return BadRequest(new { message = "Email already registered." });
+                }
+
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+                var user = new MoviesUsers
+                {
+                    Email = request.Email,
+                    Password = hashedPassword,
+                    Name = request.Name,
+                    Admin = false
+                };
+
+                _movieContext.MovieUser.Add(user);
+                _movieContext.SaveChanges();
+
+                return Ok(new { message = "User registered successfully." });
             }
-
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-            var user = new MovieUser
+            catch (Exception ex)
             {
-                Email = request.Email,
-                Password = hashedPassword,
-                Name = request.Name,
-                Admin = false
-            };
-
-            _movieContext.MovieUsers.Add(user);
-            _movieContext.SaveChanges();
-
-            return Ok(new { message = "User registered successfully." });
+                Console.WriteLine($"[Register Error] {ex.Message}");
+                return StatusCode(500, new { message = "Something went wrong during registration." });
+            }
         }
 
-        [HttpPost("login")]
+        [HttpPost("/login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            var user = _movieContext.MovieUsers
-                .FirstOrDefault(u => u.Email == request.Email);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+            try
             {
-                return Unauthorized(new { message = "Invalid email or password." });
+                var user = _movieContext.MovieUser
+                    .FirstOrDefault(u => u.Email == request.Email);
+
+                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new
+                {
+                    message = "Login successful",
+                    name = user.Name,
+                    email = user.Email,
+                    isAdmin = user.Admin
+                });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                message = "Login successful",
-                name = user.Name,
-                email = user.Email,
-                isAdmin = user.Admin
-            });
+                Console.WriteLine($"[Login Error] {ex.Message}");
+                return StatusCode(500, new { message = "Something went wrong during login." });
+            }
         }
     }
 
@@ -73,29 +87,4 @@ namespace NicheMovies.API.Controllers
         public string Email { get; set; }
         public string Password { get; set; }
     }
-
-    // [HttpGet("AllMovies")]
-    // public IActionResult GetAllMovies(int pageSize, int pageNum, [FromQuery] List<string>? MovieCategories = null)
-    // {
-    //     var moviesQuery = _movieContext.Movies.AsQueryable();
-    //
-    //     // Apply category filter if categories are provided
-    //     if (movieCategories != null &&  movieCategories.Any())
-    //     {
-    //         moviessQuery = moviesQuery.Where(b => movieCategories.Contains(b.Category));
-    //     }
-    //
-    //     var totalNumMovies = moviesQuery.Count();
-    //         
-    //     var movies = moviesQuery
-    //         .Skip((pageNum - 1) * pageSize)
-    //         .Take(pageSize)
-    //         .ToList();
-    //
-    //     return Ok(new
-    //     {
-    //         movies,
-    //         totalNumMovies
-    //     });
-    // }
 }
