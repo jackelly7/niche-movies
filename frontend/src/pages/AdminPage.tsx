@@ -79,7 +79,7 @@ const AdminPage = () => {
       if (editingMovie) {
         // Send updated movie to backend
         await axios.put(
-          `https://localhost:4000/api/movies/${editingMovie.id}`,
+          `https://localhost:4000/UpdateMovie/${editingMovie.id}`,
           formData
         );
       } else {
@@ -88,11 +88,11 @@ const AdminPage = () => {
           ...formData,
         };
 
-        await axios.post("https://localhost:4000/movies", newMovie);
+        await axios.post("https://localhost:4000/AddMovie", newMovie);
       }
 
       // After save, re-fetch the updated movie list
-      const response = await axios.get("https://localhost:4000/movies");
+      const response = await axios.get("https://localhost:4000/AllMovies");
       setMovies(response.data);
 
       handleCloseModal();
@@ -103,8 +103,15 @@ const AdminPage = () => {
 
   const handleDelete = async (movieId: string) => {
     if (confirm("Are you sure you want to delete this movie?")) {
-      // Here you would typically make an API call to your backend
-      setMovies((prev) => prev.filter((m) => m.id !== movieId));
+      try {
+        await axios.delete(`https://localhost:4000/DeleteMovie/${movieId}`);
+
+        // Update frontend list after successful deletion
+        setMovies((prev) => prev.filter((m) => m.id !== movieId));
+      } catch (err) {
+        console.error("Error deleting movie:", err);
+        alert("There was a problem deleting the movie.");
+      }
     }
   };
 
@@ -207,7 +214,7 @@ const AdminPage = () => {
                   <input
                     type="number"
                     id="year"
-                    name="year"
+                    name="releaseYear"
                     value={formData.releaseYear || ""}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -298,6 +305,7 @@ const AdminPage = () => {
                 </button>
                 <button
                   type="submit"
+                  onClick={handleSubmit}
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md transition-colors"
                 >
                   {editingMovie ? "Save Changes" : "Add Movie"}
