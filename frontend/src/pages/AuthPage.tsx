@@ -48,13 +48,12 @@ const AuthPage = () => {
 
 				<form className="mt-8 space-y-6" onSubmit={handleSubmit}>
 					{!isLogin && (
-						<div className="input-group">
-							<div>
+						<div>
 								<label
 									htmlFor="first-name"
 									className="block text-sm font-medium"
 								>
-									First Name
+									Name
 								</label>
 								<input
 									id="first-name"
@@ -63,27 +62,10 @@ const AuthPage = () => {
 									required
 									value={name}
 									onChange={(e) => setName(e.target.value)}
-									className="input-border-hover-blue-light mt-1 block px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400"
+									className="input-border-hover-blue-light mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400"
 								/>
-							</div>
-							<div>
-								<label
-									htmlFor="last-name"
-									className="block text-sm font-medium"
-								>
-									Last Name
-								</label>
-								<input
-									id="last-name"
-									name="last-name"
-									type="text"
-									required
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-									className="input-border-hover-blue-light mt-1 block px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400"
-								/>
-							</div>
 						</div>
+
 					)}
 
 					<div>
