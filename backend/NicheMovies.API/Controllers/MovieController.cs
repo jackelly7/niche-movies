@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NicheMovies.API.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace NicheMovies.API.Controllers
 {
@@ -92,6 +93,62 @@ namespace NicheMovies.API.Controllers
                 return StatusCode(500, new { message = "Something went wrong during login." });
             }
         }
+
+        // MovieController.cs
+        [HttpGet("AllMovies")]
+        public IActionResult GetAllMovies()
+        {
+            var movies = _movieContext.MoviesTitles
+                .OrderBy(m => m.Title)
+                .Skip(50)
+                .Take(5)
+                .Select(m => new
+                {
+                    m.ShowId,
+                    m.Title,
+                    m.Description,
+                    m.Rating,
+                    m.ReleaseYear,
+                    m.Director,
+                    m.Cast,
+                    m.Duration,
+                    m.Action,
+                    m.Adventure,
+                    m.Anime_Series_International_TV_Shows,
+                    m.Children,
+                    m.Comedies,
+                    m.Dramas_International_Movies,
+                    m.Comedies_Dramas_International_Movies,
+                    m.Comedies_International_Movies,
+                    m.Comedies_Romantic_Movies_,
+                    m.Crime_TV_Shows_Docuseries,
+                    m.Documentaries,
+                    m.Documentaries_International_Movies,
+                    m.Docuseries,
+                    m.Dramas,
+                    m.Dramas_Romantic_Movies,
+                    m.Family_Movies,
+                    m.Fantasy,
+                    m.Horror_Movies,
+                    m.International_Movies_Thrillers,
+                    m.International_TV_Shows_Romantic_TV_Dramas,
+                    m.KidsTV,
+                    m.Language_TV_Shows,
+                    m.Musicals,
+                    m.Nature_TV,
+                    m.Reality_TV,
+                    m.Spirituality,
+                    m.TV_Action,
+                    m.TV_Comedies,
+                    m.TV_Dramas,
+                    m.Talk_Shows_TV_Comedies,
+                    m.Thrillers
+                })
+                .ToList();
+            return Ok(movies);
+        }
+
+
     }
 
     public class LoginRequest

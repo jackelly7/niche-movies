@@ -23,6 +23,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddDbContext<MovieDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("MoviesConnection")));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline

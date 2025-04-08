@@ -1,150 +1,108 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MovieDetails from "../components/MovieDetails";
+
 interface Movie {
   id: string;
   title: string;
-  posterUrl: string;
-  year: number;
+  releaseYear: number;
   rating: string;
+  posterUrl?: string;
 }
 const MoviesPage = () => {
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [posters, setPosters] = useState<string[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [posters, setPosters] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true); // Optional: loading spinner
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+
+  function getFileNameFromUrl(url: string) {
+    return url.split("/").pop()?.split(".")[0] ?? "";
+  }
 
   useEffect(() => {
-    async function fetchPosters() {
-      const response = await axios.get("https://localhost:4000/poster");
-      setPosters(response.data);
-    }
-    fetchPosters();
-  }, []);
+    async function loadData() {
+      try {
+        // 1. Fetch movies
+        const moviesResponse = await axios.get(
+          "https://localhost:4000/AllMovies"
+        );
+        const loadedMovies = moviesResponse.data; // Array
+        console.log(loadedMovies);
 
-  useEffect(() => {
-    async function fetchMovies() {
-      const response = await axios.get<Movie[]>(
-        "https://localhost:4000/AllMovies"
-      ); // Adjust this URL if needed
-      setMovies(response.data);
-    }
-    fetchMovies();
-  }, []);
+        // 2. Fetch posters
+        const postersResponse = await axios.get(
+          "https://localhost:4000/poster"
+        );
+        const posterUrls: string[] = postersResponse.data;
+        console.log(posterUrls);
 
-  function normalizeTitle(title: string) {
-    return title.toLowerCase().replace(/\s+/g, "-");
+        // 3. Map poster URLs to movies
+        const moviesWithPosters = loadedMovies.map((movie: Movie) => {
+          const matchingPoster = posterUrls.find((url) => {
+            const posterName = getFileNameFromUrl(url);
+            return (
+              posterName &&
+              movie.title &&
+              posterName.toLowerCase() === movie.title.toLowerCase()
+            );
+          });
+
+          return {
+            ...movie,
+            posterUrl: matchingPoster || "", // fallback
+          };
+        });
+
+        setMovies(moviesWithPosters);
+        setPosters(posterUrls);
+      } catch (err) {
+        console.error("Failed to load movies or posters", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData(); // ✅ Only call this ONCE when the page loads
+  }, []); // <<<<< NOTICE: Empty dependency array [] so it only runs once
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-3xl font-bold mb-8">Posters</h1>
+    <div className="pt-20 container mx-auto px-4 pb-10">
+      <h1 className="text-3xl font-bold mb-8 mt-10">Movies</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {posters.map((posterUrl, index) => {
-          const matchedMovie = movies.find((movie) =>
-            posterUrl.toLowerCase().includes(normalizeTitle(movie.title))
-          );
+        {movies.map((movie, index) => (
+          <div
+            key={index}
+            className="relative group cursor-pointer"
+            onClick={() => setSelectedMovie(movie)}
+          >
+            <div className="aspect-[2/3] rounded-lg overflow-hidden">
+              <img
+                src={movie.posterUrl || "/no-image-placeholder.png"}
+                alt={movie.title}
+                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
+              />
+            </div>
 
-          return (
-            <div
-              key={index}
-              className="relative group cursor-pointer"
-              onClick={() => matchedMovie && setSelectedMovie(matchedMovie)}
-            >
-              <div className="aspect-[2/3] rounded-lg overflow-hidden">
-                <img
-                  src={posterUrl}
-                  alt={matchedMovie ? matchedMovie.title : `Poster ${index}`}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-                />
-              </div>
-
-              {/* Hover Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-                {matchedMovie && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">
-                      {matchedMovie.title}
-                    </h3>
-                    <p className="text-sm text-gray-300">
-                      {matchedMovie.year} • {matchedMovie.rating}
-                    </p>
-                  </div>
-                )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
+              <div>
+                <h3 className="text-lg font-semibold text-white">
+                  {movie.title}
+                </h3>
+                <p className="text-sm text-gray-300">
+                  {movie.releaseYear} • {movie.rating}
+                </p>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
-
-      {/* You can later show <MovieDetails movie={selectedMovie} /> here if selectedMovie is set */}
     </div>
   );
-
-  // return (
-  //   <div className="min-h-screen pt-20 pb-12">
-  //     <div className="container mx-auto px-4">
-  //       <h1 className="text-3xl font-bold mb-8">Movies</h1>
-
-  //       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-  //         {movies.map((movie) => (
-  //           <div
-  //             key={movie.id}
-  //             className="relative group cursor-pointer"
-  //             onClick={() => setSelectedMovie(movie)}
-  //           >
-  //             <div className="aspect-[2/3] rounded-lg overflow-hidden">
-  //               <img
-  //                 src={movie.posterUrl}
-  //                 alt={movie.title}
-  //                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-  //               />
-  //             </div>
-  //             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-  //               <div>
-  //                 <h3 className="text-lg font-semibold">{movie.title}</h3>
-  //                 <p className="text-sm text-gray-300">
-  //                   {movie.year} • {movie.rating}
-  //                 </p>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
-
-  //     {selectedMovie && (
-  //       <MovieDetails
-  //         movie={selectedMovie}
-  //         onClose={() => setSelectedMovie(null)}
-  //       />
-  //     )}
-  //     <div className="container mx-auto px-4">
-  //       <h1 className="text-3xl font-bold mb-8">Posters</h1>
-
-  //       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-  //         {posters.map((url, index) => (
-  //           <div key={index} className="relative group cursor-pointer">
-  //             <div className="aspect-[2/3] rounded-lg overflow-hidden">
-  //               <img
-  //                 src={url}
-  //                 alt={`Poster ${index}`}
-  //                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-  //               />
-  //             </div>
-  //             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-  //             <div>
-  //               <h3 className="text-lg font-semibold text-white">{posters.title}</h3>
-  //               <p className="text-sm text-gray-300">
-  //                 {posters.year} • {posters.rating}
-  //               </p>
-  //             </div>
-  //           </div>
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
 };
+
 export default MoviesPage;
