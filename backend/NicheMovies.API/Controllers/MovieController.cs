@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using NicheMovies.API.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,51 +15,66 @@ namespace NicheMovies.API.Controllers
             _movieContext = context;
         }
 
-        [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterRequest request)
+        [HttpPost("/register")]
+        public IActionResult Register([FromBody] MoviesUsers request)
         {
-            if (_movieContext.MoviesUsers.Any(u => u.Email == request.Email))
+            try
             {
-                return BadRequest(new { message = "Email already registered." });
+                if (_movieContext.MovieUser.Any(u => u.Email == request.Email))
+                {
+                    return BadRequest(new { message = "Email already registered." });
+                }
+
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+                var user = new MoviesUsers
+                {
+                    Email = request.Email,
+                    Password = hashedPassword,
+                    Name = request.Name,
+                    Admin = false
+                };
+
+                _movieContext.MovieUser.Add(user);
+                _movieContext.SaveChanges();
+
+                return Ok(new { message = "User registered successfully." });
             }
-
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-            var user = new MovieUser
+            catch (Exception ex)
             {
-                Email = request.Email,
-                Password = hashedPassword,
-                Name = request.Name,
-                Admin = false
-            };
-
-            _movieContext.MoviesUsers.Add(user);
-            _movieContext.SaveChanges();
-
-            return Ok(new { message = "User registered successfully." });
+                Console.WriteLine($"[Register Error] {ex.Message}");
+                return StatusCode(500, new { message = "Something went wrong during registration." });
+            }
         }
 
-        [HttpPost("login")]
+        [HttpPost("/login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            var user = _movieContext.MoviesUsers
-                .FirstOrDefault(u => u.Email == request.Email);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+            try
             {
-                return Unauthorized(new { message = "Invalid email or password." });
+                var user = _movieContext.MovieUser
+                    .FirstOrDefault(u => u.Email == request.Email);
+
+                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new
+                {
+                    message = "Login successful",
+                    name = user.Name,
+                    email = user.Email,
+                    isAdmin = user.Admin
+                });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                message = "Login successful",
-                name = user.Name,
-                email = user.Email,
-                isAdmin = user.Admin
-            });
-
-            
+                Console.WriteLine($"[Login Error] {ex.Message}");
+                return StatusCode(500, new { message = "Something went wrong during login." });
+            }
         }
+
         // MovieController.cs
         [HttpGet("AllMovies")]
         public IActionResult GetAllMovies()
@@ -116,10 +129,7 @@ namespace NicheMovies.API.Controllers
         }
 
 
-
     }
-
-}
 
     public class RegisterRequest
     {
@@ -133,4 +143,4 @@ namespace NicheMovies.API.Controllers
         public string Email { get; set; }
         public string Password { get; set; }
     }
-
+}

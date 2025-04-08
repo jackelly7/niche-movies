@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import MovieDetails from "../components/MovieDetails";
 
 interface Movie {
   id: string;
@@ -8,7 +9,6 @@ interface Movie {
   rating: string;
   posterUrl?: string;
 }
-
 const MoviesPage = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [posters, setPosters] = useState<string[]>([]);

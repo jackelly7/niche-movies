@@ -7,8 +7,9 @@ public class MovieDbContext: DbContext
     {
         
     }
+
     public DbSet<MovieTitle> MoviesTitles { get; set; }
-    public DbSet<MovieUser> MoviesUsers { get; set; }
+    public DbSet<MoviesUsers> MovieUser { get; set; }
 
 }
 
