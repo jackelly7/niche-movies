@@ -3,9 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NicheMovies.API.Data;
 
-public class MovieUser
+[Table("movies_users")]
+public class MoviesUsers
 {
     [Key]
+    [Column("user_id")]
     public int UserId { get; set; } // primary key
     [Required]
     public string Name { get; set; }
@@ -14,7 +16,8 @@ public class MovieUser
     public string Email { get; set; }
     public int? Age { get; set; }
     public string? Gender { get; set; }
-    public bool? Netlfix { get; set; }
+    public bool? Netflix { get; set; }
+    [Column("Amazon Prime")]
     public bool? AmazonPrime { get; set; }
     [Column("Disney+")]
     public bool? DisneyPlus { get; set; }
@@ -33,7 +36,6 @@ public class MovieUser
     public string? State { get; set; }
 
     public int? Zip { get; set; }
-    [Required]
     public bool Admin { get; set; }
     [Required]
     public string Password { get; set; }
