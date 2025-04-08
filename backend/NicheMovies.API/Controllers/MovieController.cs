@@ -99,7 +99,6 @@ namespace NicheMovies.API.Controllers
         {
             var movies = _movieContext.MoviesTitles
                 .OrderBy(m => m.Title)
-                .Skip(50)
                 .Take(5)
                 .Select(m => new
                 {
@@ -208,11 +207,63 @@ namespace NicheMovies.API.Controllers
             });
         }
 
-    }
 
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public class LoginRequest
+        {
+            public string Email { get; set; }
+            public string Password { get; set; }
+        }
+
+        // below is the add, update, and delete.
+        [HttpPost("AddMovie")]
+        public IActionResult AddMovie([FromBody] MovieTitle newMovie)
+        {
+            _movieContext.MoviesTitles.Add(newMovie);
+            _movieContext.SaveChanges();
+            return Ok(newMovie);
+        }
+
+        [HttpPut("UpdateMovie/{movieId}")]
+        public IActionResult UpdateMovie(string movieId, [FromBody] MovieTitle updatedMovie)
+        {
+            var existingMovie = _movieContext.MoviesTitles.Find(movieId);
+
+            if (existingMovie == null)
+            {
+                return NotFound(new { message = "Movie not found" });
+            }
+
+            existingMovie.Title = updatedMovie.Title;
+            existingMovie.ReleaseYear = updatedMovie.ReleaseYear;
+            existingMovie.Rating = updatedMovie.Rating;
+            existingMovie.Description = updatedMovie.Description;
+            existingMovie.Duration = updatedMovie.Duration;
+            existingMovie.Cast = updatedMovie.Cast;
+
+            _movieContext.MoviesTitles.Update(existingMovie);
+            _movieContext.SaveChanges();
+
+            return Ok(existingMovie);
+        }
+
+        [HttpDelete("DeleteMovie/{movieId}")]
+        public IActionResult DeleteMovie(string movieId)
+        {
+            var movie = _movieContext.MoviesTitles.Find(movieId);
+
+            if (movie == null)
+            {
+                return NotFound(new { message = "Movie not found" });
+            }
+
+            _movieContext.MoviesTitles.Remove(movie);
+            _movieContext.SaveChanges();
+
+            return NoContent();
+        }
+
+
+
+
     }
 }

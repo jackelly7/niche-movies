@@ -80,25 +80,25 @@ const AdminPage = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		try {
-			if (editingMovie) {
-				// Send updated movie to backend
-				await axios.put(
-					`https://localhost:4000/movies/${editingMovie.id}`,
-					formData
-				);
-			} else {
-				// Send new movie to backend
-				const newMovie = {
-					...formData,
-				};
+    try {
+      if (editingMovie) {
+        // Send updated movie to backend
+        await axios.put(
+          `https://localhost:4000/UpdateMovie/${editingMovie.id}`,
+          formData
+        );
+      } else {
+        // Send new movie to backend
+        const newMovie = {
+          ...formData,
+        };
 
-				await axios.post("https://localhost:4000/movies", newMovie);
-			}
+        await axios.post("https://localhost:4000/AddMovie", newMovie);
+      }
 
-			// After save, re-fetch the updated movie list
-			const response = await axios.get("https://localhost:4000/movies");
-			setMovies(response.data);
+      // After save, re-fetch the updated movie list
+      const response = await axios.get("https://localhost:4000/AllMovies");
+      setMovies(response.data);
 
 			handleCloseModal();
 		} catch (err) {
@@ -106,12 +106,19 @@ const AdminPage = () => {
 		}
 	};
 
-	const handleDelete = async (movieId: string) => {
-		if (confirm("Are you sure you want to delete this movie?")) {
-			// Here you would typically make an API call to your backend
-			setMovies((prev) => prev.filter((m) => m.id !== movieId));
-		}
-	};
+  const handleDelete = async (movieId: string) => {
+    if (confirm("Are you sure you want to delete this movie?")) {
+      try {
+        await axios.delete(`https://localhost:4000/DeleteMovie/${movieId}`);
+
+        // Update frontend list after successful deletion
+        setMovies((prev) => prev.filter((m) => m.id !== movieId));
+      } catch (err) {
+        console.error("Error deleting movie:", err);
+        alert("There was a problem deleting the movie.");
+      }
+    }
+  };
 
 	return (
 		<div className="min-h-screen pt-20 pb-12" style={{ marginTop: "20px" }}>
