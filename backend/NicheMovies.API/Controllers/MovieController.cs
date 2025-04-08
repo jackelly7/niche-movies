@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using NicheMovies.API.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace NicheMovies.API.Controllers
 {
@@ -19,7 +20,7 @@ namespace NicheMovies.API.Controllers
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterRequest request)
         {
-            if (_movieContext.MovieUsers.Any(u => u.Email == request.Email))
+            if (_movieContext.MoviesUsers.Any(u => u.Email == request.Email))
             {
                 return BadRequest(new { message = "Email already registered." });
             }
@@ -34,7 +35,7 @@ namespace NicheMovies.API.Controllers
                 Admin = false
             };
 
-            _movieContext.MovieUsers.Add(user);
+            _movieContext.MoviesUsers.Add(user);
             _movieContext.SaveChanges();
 
             return Ok(new { message = "User registered successfully." });
@@ -43,7 +44,7 @@ namespace NicheMovies.API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            var user = _movieContext.MovieUsers
+            var user = _movieContext.MoviesUsers
                 .FirstOrDefault(u => u.Email == request.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
@@ -58,8 +59,67 @@ namespace NicheMovies.API.Controllers
                 email = user.Email,
                 isAdmin = user.Admin
             });
+
+            
         }
+        // MovieController.cs
+        [HttpGet("AllMovies")]
+        public IActionResult GetAllMovies()
+        {
+            var movies = _movieContext.MoviesTitles
+                .OrderBy(m => m.Title)
+                .Take(5)
+                .Select(m => new
+                {
+                    m.ShowId,
+                    m.Title,
+                    m.Description,
+                    m.Rating,
+                    m.ReleaseYear,
+                    m.Director,
+                    m.Cast,
+                    m.Duration,
+                    m.Action,
+                    m.Adventure,
+                    m.Anime_Series_International_TV_Shows,
+                    m.Children,
+                    m.Comedies,
+                    m.Dramas_International_Movies,
+                    m.Comedies_Dramas_International_Movies,
+                    m.Comedies_International_Movies,
+                    m.Comedies_Romantic_Movies_,
+                    m.Crime_TV_Shows_Docuseries,
+                    m.Documentaries,
+                    m.Documentaries_International_Movies,
+                    m.Docuseries,
+                    m.Dramas,
+                    m.Dramas_Romantic_Movies,
+                    m.Family_Movies,
+                    m.Fantasy,
+                    m.Horror_Movies,
+                    m.International_Movies_Thrillers,
+                    m.International_TV_Shows_Romantic_TV_Dramas,
+                    m.KidsTV,
+                    m.Language_TV_Shows,
+                    m.Musicals,
+                    m.Nature_TV,
+                    m.Reality_TV,
+                    m.Spirituality,
+                    m.TV_Action,
+                    m.TV_Comedies,
+                    m.TV_Dramas,
+                    m.Talk_Shows_TV_Comedies,
+                    m.Thrillers
+                })
+                .ToList();
+            return Ok(movies);
+        }
+
+
+
     }
+
+}
 
     public class RegisterRequest
     {
@@ -74,28 +134,3 @@ namespace NicheMovies.API.Controllers
         public string Password { get; set; }
     }
 
-    // [HttpGet("AllMovies")]
-    // public IActionResult GetAllMovies(int pageSize, int pageNum, [FromQuery] List<string>? MovieCategories = null)
-    // {
-    //     var moviesQuery = _movieContext.Movies.AsQueryable();
-    //
-    //     // Apply category filter if categories are provided
-    //     if (movieCategories != null &&  movieCategories.Any())
-    //     {
-    //         moviessQuery = moviesQuery.Where(b => movieCategories.Contains(b.Category));
-    //     }
-    //
-    //     var totalNumMovies = moviesQuery.Count();
-    //         
-    //     var movies = moviesQuery
-    //         .Skip((pageNum - 1) * pageSize)
-    //         .Take(pageSize)
-    //         .ToList();
-    //
-    //     return Ok(new
-    //     {
-    //         movies,
-    //         totalNumMovies
-    //     });
-    // }
-}

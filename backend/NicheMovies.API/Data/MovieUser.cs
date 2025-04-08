@@ -3,9 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NicheMovies.API.Data;
 
+[Table("movies_users")]
 public class MovieUser
 {
     [Key]
+    [Column("user_id")]
     public int UserId { get; set; } // primary key
     [Required]
     public string Name { get; set; }

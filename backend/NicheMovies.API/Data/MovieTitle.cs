@@ -1,15 +1,19 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-public class Movie
+[Table("movies_titles")]
+public class MovieTitle
 {
     [Key]
+    [Column("show_id")]
     public int ShowId { get; set; }
 
     [Required]
+    [Column("type")]
     public string? Type { get; set; }
 
     [Required]
+    [Column("title")]
     public string? Title { get; set; }
 
     public string? Director { get; set; }
@@ -19,6 +23,7 @@ public class Movie
     public string? Country { get; set; }
 
     [Required]
+    [Column("release_year")]
     public int? ReleaseYear { get; set; }
 
     [Required]
@@ -103,7 +108,7 @@ public class Movie
     public bool? International_Movies_Thrillers { get; set; }
 
     [Required]
-    [Column("International TV Shows Romantic TV Dramas")]
+    [Column("International TV Shows Romantic TV Shows TV Dramas")]
     public bool? International_TV_Shows_Romantic_TV_Dramas { get; set; }
 
     [Required]
