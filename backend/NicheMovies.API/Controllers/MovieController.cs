@@ -1,70 +1,90 @@
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using NicheMovies.API.Data;
 
 namespace NicheMovies.API.Controllers
 {
     [Route("")]
     [ApiController]
-
     public class MovieController : ControllerBase
     {
-        private MovieDbContext _movieContext;
+        private readonly MovieDbContext _movieContext;
 
-        // GET
-        public MovieController(MovieDbContext poop) => _movieContext = poop;
-
-        // public OkObjectResult Get(int pageLength, int pageNum)
-        // {
-        //     // IS414 COOKIES
-        //     HttpContext.Response.Cookies.Append("Horror", "Comedy", new CookieOptions()
-        //     {
-        //         HttpOnly = true,
-        //         Secure = true,
-        //         SameSite = SameSiteMode.Strict,
-        //         Expires = DateTime.Now.AddMinutes(1),
-        //     });
-        //
-        //     var blah = _movieContext.Movies
-        //         .Skip((pageNum - 1) * pageLength)
-        //         .Take(pageLength)
-        //         .ToList();
-        //
-        //     var totalNumBooks = _movieContext.Movies.Count();
-        //
-        //     return Ok(new
-        //     {
-        //         Books = blah,
-        //         TotalBooks = totalNumBooks
-        //     });
-        // }
-
-
-        [HttpGet("api/movies")]
-        public IActionResult GetMovies()
+        public MovieController(MovieDbContext context)
         {
-            var movies = _movieContext.Movies.Take(10).ToList();
-            return Ok(movies);
+            _movieContext = context;
         }
 
-        [HttpPost("api/movies")]
-        public IActionResult AddMovie([FromBody] Movie movie)
+        [HttpPost("/register")]
+        public IActionResult Register([FromBody] RegisterRequest request)
         {
-            _movieContext.Movies.Add(movie);
-            _movieContext.SaveChanges();
-            return Created("", movie);
+            try
+            {
+                if (_movieContext.MovieUser.Any(u => u.Email == request.Email))
+                {
+                    return BadRequest(new { message = "Email already registered." });
+                }
+
+                var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+                var user = new MoviesUsers
+                {
+                    Email = request.Email,
+                    Password = hashedPassword,
+                    Name = request.Name,
+                    Admin = false
+                };
+
+                _movieContext.MovieUser.Add(user);
+                _movieContext.SaveChanges();
+
+                return Ok(new { message = "User registered successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Register Error] {ex.Message}");
+                return StatusCode(500, new { message = "Something went wrong during registration." });
+            }
         }
 
-        [HttpDelete("api/movies/{id}")]
-        public IActionResult DeleteMovie(int id)
+        [HttpPost("/login")]
+        public IActionResult Login([FromBody] LoginRequest request)
         {
-            var movie = _movieContext.Movies.Find(id);
-            if (movie == null) return NotFound();
+            try
+            {
+                var user = _movieContext.MovieUser
+                    .FirstOrDefault(u => u.Email == request.Email);
 
-            _movieContext.Movies.Remove(movie);
-            _movieContext.SaveChanges();
-            return NoContent();
+                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new
+                {
+                    message = "Login successful",
+                    name = user.Name,
+                    email = user.Email,
+                    isAdmin = user.Admin
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Login Error] {ex.Message}");
+                return StatusCode(500, new { message = "Something went wrong during login." });
+            }
         }
     }
-}  
+
+    public class RegisterRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class LoginRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+}

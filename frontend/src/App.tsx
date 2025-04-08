@@ -17,7 +17,8 @@ function App() {
 				<main className="flex-grow">
 					<Routes>
 						<Route path="/" element={<LandingPage />} />
-						<Route path="/auth" element={<AuthPage />} />
+						<Route path="/login" element={<AuthPage isLogin={true} />} />
+						<Route path="/register" element={<AuthPage isLogin={false} />} />
 						<Route path="/movies" element={<MoviesPage />} />
 						<Route path="/admin" element={<AdminPage />} />
 						<Route path="/privacy" element={<PrivacyPage />} />
