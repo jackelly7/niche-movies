@@ -39,5 +39,32 @@ namespace NicheMovies.API.Controllers
         //         TotalBooks = totalNumBooks
         //     });
         // }
+
+
+        [HttpGet("api/movies")]
+        public IActionResult GetMovies()
+        {
+            var movies = _movieContext.Movies.Take(10).ToList();
+            return Ok(movies);
+        }
+
+        [HttpPost("api/movies")]
+        public IActionResult AddMovie([FromBody] Movie movie)
+        {
+            _movieContext.Movies.Add(movie);
+            _movieContext.SaveChanges();
+            return Created("", movie);
+        }
+
+        [HttpDelete("api/movies/{id}")]
+        public IActionResult DeleteMovie(int id)
+        {
+            var movie = _movieContext.Movies.Find(id);
+            if (movie == null) return NotFound();
+
+            _movieContext.Movies.Remove(movie);
+            _movieContext.SaveChanges();
+            return NoContent();
+        }
     }
 }  

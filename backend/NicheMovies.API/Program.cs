@@ -1,9 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using NicheMovies.API.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// these two lines are what ema added
+builder.Services.AddDbContext<MovieDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("MoviesConnection")));
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddCors();

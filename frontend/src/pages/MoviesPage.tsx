@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MovieDetails from "../components/MovieDetails";
-
 interface Movie {
   id: string;
   title: string;
@@ -9,7 +8,6 @@ interface Movie {
   year: number;
   rating: string;
 }
-
 const MoviesPage = () => {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [posters, setPosters] = useState<string[]>([]);
@@ -20,7 +18,6 @@ const MoviesPage = () => {
     }
     fetchPosters();
   }, []);
-
   // Placeholder data - will be replaced with backend data
   const movies: Movie[] = [
     {
@@ -33,12 +30,10 @@ const MoviesPage = () => {
     },
     // Add more sample movies here
   ];
-
   return (
     <div className="min-h-screen pt-20 pb-12">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">Movies</h1>
-
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {movies.map((movie) => (
             <div
@@ -65,7 +60,6 @@ const MoviesPage = () => {
           ))}
         </div>
       </div>
-
       {selectedMovie && (
         <MovieDetails
           movie={selectedMovie}
@@ -85,5 +79,4 @@ const MoviesPage = () => {
     </div>
   );
 };
-
 export default MoviesPage;
