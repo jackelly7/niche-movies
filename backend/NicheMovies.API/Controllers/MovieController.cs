@@ -81,6 +81,7 @@ namespace NicheMovies.API.Controllers
         {
             var movies = _movieContext.MoviesTitles
                 .OrderBy(m => m.Title)
+                .Skip(50)
                 .Take(5)
                 .Select(m => new
                 {
