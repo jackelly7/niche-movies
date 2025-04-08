@@ -5,7 +5,7 @@ import MovieDetails from "../components/MovieDetails";
 interface Movie {
   id: string;
   title: string;
-  year: number;
+  releaseYear: number;
   rating: string;
   posterUrl?: string;
 }
@@ -70,8 +70,8 @@ const MoviesPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-3xl font-bold mb-8">Movies</h1>
+    <div className="pt-20 container mx-auto px-4 pb-10">
+      <h1 className="text-3xl font-bold mb-8 mt-10">Movies</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {movies.map((movie, index) => (
@@ -94,7 +94,7 @@ const MoviesPage = () => {
                   {movie.title}
                 </h3>
                 <p className="text-sm text-gray-300">
-                  {movie.year} • {movie.rating}
+                  {movie.releaseYear} • {movie.rating}
                 </p>
               </div>
             </div>
