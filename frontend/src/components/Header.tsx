@@ -5,7 +5,7 @@ import { Search, User, Menu, X } from "lucide-react";
 const Header = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const location = useLocation();
-	const isAuthPage = location.pathname === "/auth";
+	const isAuthPage = location.pathname === "/login";
 
 	return (
 		<header className="page-bkg fixed top-0 w-full backdrop-blur-sm z-50 border-b border-gray-800">
@@ -33,7 +33,7 @@ const Header = () => {
 									<Search className="w-5 h-5" />
 								</button>
 								<Link
-									to="/auth"
+									to="/login"
 									className="flex items-center space-x-1 niche-blue-hover-dark transition-colors"
 								>
 									<User className="w-5 h-5" />
@@ -73,7 +73,7 @@ const Header = () => {
 										Search
 									</button>
 									<Link
-										to="/auth"
+										to="/login"
 										className="niche-blue-hover-dark transition-colors"
 										onClick={() => setIsMenuOpen(false)}
 									>

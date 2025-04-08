@@ -5,7 +5,7 @@ using NicheMovies.API.Data;
 
 namespace NicheMovies.API.Controllers
 {
-    [Route("")]
+    [Route("/api")]
     [ApiController]
     public class MovieController : ControllerBase
     {

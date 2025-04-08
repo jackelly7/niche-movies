@@ -39,7 +39,7 @@ const Footer = () => {
 							</li>
 							<li>
 								<Link
-									to="/auth"
+									to="/login"
 									className="niche-blue-hover-dark transition-colors"
 								>
 									Sign In
