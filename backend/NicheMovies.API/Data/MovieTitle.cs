@@ -2,16 +2,18 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 [Table("movies_titles")]
-public class Movie
+public class MovieTitle
 {
-    [Column("show_id")]
     [Key]
+    [Column("show_id")]
     public int ShowId { get; set; }
 
     [Required]
+    [Column("type")]
     public string? Type { get; set; }
 
     [Required]
+    [Column("title")]
     public string? Title { get; set; }
 
     public string? Director { get; set; }
@@ -20,9 +22,8 @@ public class Movie
 
     public string? Country { get; set; }
 
-
-    [Column("release_year")]
     [Required]
+    [Column("release_year")]
     public int? ReleaseYear { get; set; }
 
     [Required]

@@ -22,9 +22,7 @@ namespace NicheMovies.API.Controllers
         public async Task<IActionResult> GetPosters()
         {
             var posters = await _blobService.ListBlobsAsync();
-            var posterList = posters
-                .Take(5);
-            return Ok(posterList);
+            return Ok(posters);
         }
     }
 }
