@@ -7,6 +7,7 @@ namespace NicheMovies.API.Data;
 public class MoviesUsers
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("user_id")]
     public int UserId { get; set; } // primary key
     [Required]
@@ -38,5 +39,6 @@ public class MoviesUsers
     public int? Zip { get; set; }
     public bool Admin { get; set; }
     [Required]
+    [StringLength(30, MinimumLength = 15, ErrorMessage = "Password must be between 15 and 30 characters.")]
     public string Password { get; set; }
 }

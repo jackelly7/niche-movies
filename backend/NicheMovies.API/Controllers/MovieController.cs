@@ -20,6 +20,11 @@ namespace NicheMovies.API.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
                 if (_movieContext.MovieUser.Any(u => u.Email == request.Email))
                 {
                     return BadRequest(new { message = "Email already registered." });
@@ -32,7 +37,21 @@ namespace NicheMovies.API.Controllers
                     Email = request.Email,
                     Password = hashedPassword,
                     Name = request.Name,
-                    Admin = false
+                    Admin = false,
+                    Age = request.Age,
+                    Phone = request.Phone,
+                    Gender = request.Gender,
+                    Netflix = request.Netflix,
+                    AmazonPrime = request.AmazonPrime,
+                    DisneyPlus = request.DisneyPlus,
+                    ParamountPlus = request.ParamountPlus,
+                    Max = request.Max,
+                    Hulu = request.Hulu,
+                    AppleTVPlus = request.AppleTVPlus,
+                    Peacock = request.Peacock,
+                    City = request.City,
+                    State = request.State,
+                    Zip = request.Zip,
                 };
 
                 _movieContext.MovieUser.Add(user);
@@ -130,13 +149,6 @@ namespace NicheMovies.API.Controllers
         }
 
 
-    }
-
-    public class RegisterRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Name { get; set; }
     }
 
     public class LoginRequest
