@@ -72,37 +72,46 @@ const MoviesPage = () => {
   return (
     <div className="pt-20 container mx-auto px-4 pb-10">
       <h1 className="text-3xl font-bold mb-8 mt-10">Movies</h1>
-
+  
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {movies.map((movie, index) => (
-          <div
-            key={index}
-            className="relative group cursor-pointer"
-            onClick={() => setSelectedMovie(movie)}
-          >
-            <div className="aspect-[2/3] rounded-lg overflow-hidden">
-              <img
-                src={movie.posterUrl || "/no-image-placeholder.png"}
-                alt={movie.title}
-                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-              <div>
-                <h3 className="text-lg font-semibold text-white">
-                  {movie.title}
-                </h3>
-                <p className="text-sm text-gray-300">
-                  {movie.releaseYear} • {movie.rating}
-                </p>
+        {movies.map((movie, index) => {
+          const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  
+          return (
+            <div
+              key={index}
+              className={`relative group ${isLoggedIn ? "cursor-pointer" : "cursor-default"}`}
+              onClick={() => {
+                if (isLoggedIn) {
+                  setSelectedMovie(movie);
+                }
+              }}
+            >
+              <div className="aspect-[2/3] rounded-lg overflow-hidden">
+                <img
+                  src={movie.posterUrl || "/no-image-placeholder.png"}
+                  alt={movie.title}
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
+                />
+              </div>
+  
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">
+                    {movie.title}
+                  </h3>
+                  <p className="text-sm text-gray-300">
+                    {movie.releaseYear} • {movie.rating}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
+  
 };
 
 export default MoviesPage;

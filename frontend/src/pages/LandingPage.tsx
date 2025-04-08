@@ -1,7 +1,23 @@
-import { Link } from "react-router-dom";
 import { Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const LandingPage = () => {
+	const navigate = useNavigate();
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+	useEffect(() => {
+		setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+	}, []);
+
+	const handleProtectedNavigation = (path: string) => {
+		if (isLoggedIn) {
+			navigate(path);
+		} else {
+			navigate("/login");
+		}
+	};
+
 	return (
 		<div className="flex flex-col">
 			{/* Hero Section */}
@@ -25,19 +41,19 @@ const LandingPage = () => {
 							cinema today.
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4">
-							<Link
-								to="/login"
+							<button
+								onClick={() => handleProtectedNavigation("/movies")}
 								className="niche-blue-bkg text-white px-8 py-3 rounded-md font-semibold flex items-center justify-center transition-colors"
 							>
 								<Play className="w-5 h-5 mr-2" />
 								Start Watching Now
-							</Link>
-							<Link
-								to="/movies"
+							</button>
+							<button
+								onClick={() => navigate("/movies")}
 								className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-md font-semibold flex items-center justify-center transition-colors"
 							>
 								Browse Movies
-							</Link>
+							</button>
 						</div>
 					</div>
 				</div>

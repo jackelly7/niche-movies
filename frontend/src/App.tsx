@@ -5,6 +5,7 @@ import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import MoviesPage from "./pages/MoviesPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
 import ScrollToTop from "./components/ScrollToTop";
 import AdminPage from "./pages/AdminPage";
 
@@ -17,11 +18,18 @@ function App() {
 				<main className="flex-grow">
 					<Routes>
 						<Route path="/" element={<LandingPage />} />
-						<Route path="/login" element={<AuthPage isLogin={true} />} />
-						<Route path="/register" element={<AuthPage isLogin={false} />} />
+						<Route
+							path="/login"
+							element={<AuthPage isLogin={true} />}
+						/>
+						<Route
+							path="/register"
+							element={<AuthPage isLogin={false} />}
+						/>
 						<Route path="/movies" element={<MoviesPage />} />
 						<Route path="/admin" element={<AdminPage />} />
 						<Route path="/privacy" element={<PrivacyPage />} />
+						<Route path="/terms" element={<TermsPage />} />
 					</Routes>
 				</main>
 				<Footer />
