@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Play, Plus, ThumbsUp } from "lucide-react";
+import { X, Play, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
@@ -126,10 +126,6 @@ useEffect(() => {
                 <button className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-6 py-3 rounded-md font-semibold transition-colors">
                   <Plus className="w-5 h-5" />
                   My List
-                </button>
-                <button className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-6 py-3 rounded-md font-semibold transition-colors">
-                  <ThumbsUp className="w-5 h-5" />
-                  Rate
                 </button>
               </div>
 

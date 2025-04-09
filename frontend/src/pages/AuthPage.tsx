@@ -20,6 +20,9 @@ const AuthPage = ({
 	const navigate = useNavigate();
 	const [isMfaLoginStep, setIsMfaLoginStep] = useState(false);
 	const [mfaCode, setMfaCode] = useState("");
+	const now = new Date();
+	const expirationTime = new Date(now.getTime() + 1 * 60 * 1000); // 1 min for testing
+
 
 	const handleStreamingChange = (service: string) => {
 		setStreamingServices((prev) =>
@@ -92,6 +95,8 @@ const AuthPage = ({
 					data.isAdmin ? "true" : "false"
 				);
 				localStorage.setItem("userId", data.userId.toString());
+				localStorage.setItem("sessionExpiresAt", expirationTime.toISOString());
+
 		navigate(data.isAdmin ? "/admin" : "/movies");
 			} else {
 				localStorage.setItem("isLoggedIn", "true");
@@ -102,6 +107,7 @@ const AuthPage = ({
 				localStorage.setItem("userEmail", email);
 
 				localStorage.setItem("userId", data.userId.toString());
+				localStorage.setItem("sessionExpiresAt", expirationTime.toISOString());
 		navigate("/movies");
 			}
 		} catch (err) {
