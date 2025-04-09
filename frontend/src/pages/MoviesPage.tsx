@@ -89,7 +89,7 @@ const MoviesPage = () => {
             >
               <div className="aspect-[2/3] rounded-lg overflow-hidden">
                 <img
-                  src={movie.posterUrl || "/no-image-placeholder.png"}
+                  src={movie.posterUrl || "img/no-image-placeholder.png"}
                   alt={movie.title}
                   className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
                 />
