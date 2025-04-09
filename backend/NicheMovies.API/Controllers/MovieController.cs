@@ -256,5 +256,14 @@ namespace NicheMovies.API.Controllers
             return NoContent();
         }
 
+        [HttpGet("get-user-id-by-email")]
+        public async Task<IActionResult> GetUserIdByEmail(string email)
+        {
+            var user = await _movieContext.MovieUser.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return NotFound();
+            return Ok(user.UserId);
+        }
+
+
     }
 }

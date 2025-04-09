@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => {
+const AuthPage = ({
+  isLogin: initialIsLogin = true,
+}: {
+  isLogin?: boolean;
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -15,27 +19,27 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
   const [zip, setZip] = useState("");
   const navigate = useNavigate();
 
-	const handleStreamingChange = (service: string) => {
-		setStreamingServices((prev) =>
-			prev.includes(service)
-				? prev.filter((s) => s !== service)
-				: [...prev, service]
-		);
-	};
+  const handleStreamingChange = (service: string) => {
+    setStreamingServices((prev) =>
+      prev.includes(service)
+        ? prev.filter((s) => s !== service)
+        : [...prev, service]
+    );
+  };
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-		if (!initialIsLogin && (password.length < 15 || password.length > 30)) {
-			setPasswordError("Password must be between 15 and 30 characters.");
-			return;
-		}
+    if (!initialIsLogin && (password.length < 15 || password.length > 30)) {
+      setPasswordError("Password must be between 15 and 30 characters.");
+      return;
+    }
 
-		setPasswordError("");
+    setPasswordError("");
 
-		const endpoint = initialIsLogin
-			? "https://localhost:4000/login"
-			: "https://localhost:4000/register";
+    const endpoint = initialIsLogin
+      ? "https://localhost:4000/login"
+      : "https://localhost:4000/register";
 
     const body = initialIsLogin
       ? { email, password }
@@ -66,23 +70,24 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
         body: JSON.stringify(body),
       });
 
-			const data = await res.json();
+      const data = await res.json();
 
-			if (!res.ok) {
-				alert(data.message || "Something went wrong.");
-				return;
-			}
+      if (!res.ok) {
+        alert(data.message || "Something went wrong.");
+        return;
+      }
 
-	  if (initialIsLogin && data.isAdmin) {
-		localStorage.setItem("isLoggedIn", "true");
-		localStorage.setItem("isAdmin", "true");
-		navigate("/admin");
-	  } else {
-		localStorage.setItem("isLoggedIn", "true");
-		localStorage.setItem("isAdmin", "false");
-		navigate("/movies");
-	  }
-	  
+      if (initialIsLogin && data.isAdmin) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("isAdmin", "true");
+        localStorage.setItem("email", data.email);
+        navigate("/admin");
+      } else {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("isAdmin", "false");
+        localStorage.setItem("email", data.email);
+        navigate("/movies");
+      }
     } catch (err) {
       console.error(err);
       alert("An error occurred. Please try again.");
@@ -100,14 +105,20 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
             {initialIsLogin ? (
               <>
                 Or{" "}
-                <button className="account-sign-text underline" onClick={() => navigate("/register")}>
+                <button
+                  className="account-sign-text underline"
+                  onClick={() => navigate("/register")}
+                >
                   create a new account
                 </button>
               </>
             ) : (
               <>
                 Already have an account?{" "}
-                <button className="account-sign-text underline" onClick={() => navigate("/login")}>
+                <button
+                  className="account-sign-text underline"
+                  onClick={() => navigate("/login")}
+                >
                   Sign in
                 </button>
               </>
@@ -119,7 +130,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
           {!initialIsLogin && (
             <>
               <div>
-                <label htmlFor="first-name" className="block text-sm font-medium text-white">Name</label>
+                <label
+                  htmlFor="first-name"
+                  className="block text-sm font-medium text-white"
+                >
+                  Name
+                </label>
                 <input
                   id="first-name"
                   name="first-name"
@@ -132,9 +148,14 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-white">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-white"
+                >
                   Phone Number <br />
-                  <span className="text-gray-400 text-xs">* Format: 123-456-7890</span>
+                  <span className="text-gray-400 text-xs">
+                    * Format: 123-456-7890
+                  </span>
                 </label>
                 <input
                   id="phone"
@@ -160,27 +181,43 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white">Email address</label>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-white"
+            >
+              Email address
+            </label>
             <input
               id="email"
               name="email"
               type="email"
               required
               value={email}
-			  placeholder={initialIsLogin ? "Enter your email" : "example@movies.com"}
+              placeholder={
+                initialIsLogin ? "Enter your email" : "example@movies.com"
+              }
               onChange={(e) => setEmail(e.target.value)}
               className="input-border-hover-blue-light mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white">Password</label>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-white"
+            >
+              Password
+            </label>
             <input
               id="password"
               name="password"
               type="password"
               required
-              placeholder={initialIsLogin ? "Enter your password" : "Must be 15-30 characters"}
+              placeholder={
+                initialIsLogin
+                  ? "Enter your password"
+                  : "Must be 15-30 characters"
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input-border-hover-blue-light mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400"
@@ -193,7 +230,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
           {!initialIsLogin && (
             <>
               <div>
-                <label htmlFor="age" className="block text-sm font-medium text-white">Age</label>
+                <label
+                  htmlFor="age"
+                  className="block text-sm font-medium text-white"
+                >
+                  Age
+                </label>
                 <input
                   id="age"
                   name="age"
@@ -206,7 +248,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
               </div>
 
               <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-white">Gender</label>
+                <label
+                  htmlFor="gender"
+                  className="block text-sm font-medium text-white"
+                >
+                  Gender
+                </label>
                 <select
                   id="gender"
                   name="gender"
@@ -221,7 +268,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
               </div>
 
               <div>
-                <label htmlFor="city" className="block text-sm font-medium text-white">City</label>
+                <label
+                  htmlFor="city"
+                  className="block text-sm font-medium text-white"
+                >
+                  City
+                </label>
                 <input
                   id="city"
                   name="city"
@@ -233,7 +285,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
               </div>
 
               <div>
-                <label htmlFor="state" className="block text-sm font-medium text-white">State</label>
+                <label
+                  htmlFor="state"
+                  className="block text-sm font-medium text-white"
+                >
+                  State
+                </label>
                 <select
                   id="state"
                   name="state"
@@ -241,7 +298,7 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
                   onChange={(e) => setState(e.target.value)}
                   className="input-border-hover-blue-light mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                 >
-                   <option disabled value="">
+                  <option disabled value="">
                     Select
                   </option>
                   <option value="AL">Alabama</option>
@@ -298,7 +355,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
               </div>
 
               <div>
-                <label htmlFor="zip" className="block text-sm font-medium text-white">ZIP Code</label>
+                <label
+                  htmlFor="zip"
+                  className="block text-sm font-medium text-white"
+                >
+                  ZIP Code
+                </label>
                 <input
                   id="zip"
                   name="zip"
@@ -313,9 +375,20 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
               </div>
 
               <fieldset className="mt-4">
-                <legend className="text-sm font-medium text-white">Streaming Services</legend>
+                <legend className="text-sm font-medium text-white">
+                  Streaming Services
+                </legend>
                 <div className="mt-2 space-y-1">
-                  {["Netflix", "Hulu", "Max", "Disney+", "Amazon Prime", "Paramount+", "Apple TV+", "Peacock"].map(service => (
+                  {[
+                    "Netflix",
+                    "Hulu",
+                    "Max",
+                    "Disney+",
+                    "Amazon Prime",
+                    "Paramount+",
+                    "Apple TV+",
+                    "Peacock",
+                  ].map((service) => (
                     <div key={service} className="flex items-center">
                       <input
                         id={service}
@@ -325,7 +398,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
                         onChange={() => handleStreamingChange(service)}
                         className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                       />
-                      <label htmlFor={service} className="ml-2 block text-sm text-white">{service}</label>
+                      <label
+                        htmlFor={service}
+                        className="ml-2 block text-sm text-white"
+                      >
+                        {service}
+                      </label>
                     </div>
                   ))}
                 </div>
@@ -333,34 +411,28 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
             </>
           )}
 
-					<div>
-						<button
-							type="submit"
-							className="niche-blue-bkg w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
-						>
-							{initialIsLogin ? "Sign in" : "Create account"}
-						</button>
-					</div>
-				</form>
+          <div>
+            <button
+              type="submit"
+              className="niche-blue-bkg w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              {initialIsLogin ? "Sign in" : "Create account"}
+            </button>
+          </div>
+        </form>
 
-				<div className="text-sm text-center">
-					<Link
-						to="/privacy"
-						className="text-gray-400 niche-blue-hover-dark"
-					>
-						Privacy Policy
-					</Link>
-					{" | "}
-					<Link
-						to="/terms"
-						className="text-gray-400 niche-blue-hover-dark"
-					>
-						Terms of Use
-					</Link>
-				</div>
-			</div>
-		</div>
-	);
+        <div className="text-sm text-center">
+          <Link to="/privacy" className="text-gray-400 niche-blue-hover-dark">
+            Privacy Policy
+          </Link>
+          {" | "}
+          <Link to="/terms" className="text-gray-400 niche-blue-hover-dark">
+            Terms of Use
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AuthPage;

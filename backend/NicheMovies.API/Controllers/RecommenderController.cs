@@ -19,7 +19,7 @@ namespace NicheMovies.API.Controllers
         [HttpGet("content-based")]
         public async Task<IActionResult> GetContentBasedRecommendations(int userId, int topN = 5)
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5001/recommend/content?user_id=1&top_n={topN}");
+            var response = await _httpClient.GetAsync($"http://localhost:5001/recommend/content?user_id={userId}&top_n={topN}");
             var jsonString = await response.Content.ReadAsStringAsync();
             var recommendations = JsonConvert.DeserializeObject<List<MovieRecommendation>>(jsonString);
             return Ok(recommendations);
@@ -28,7 +28,7 @@ namespace NicheMovies.API.Controllers
         [HttpGet("collaborative")]
         public async Task<IActionResult> GetCollaborativeRecommendations(int userId, int topN = 5)
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5001/recommend/collaborative?user_id=1&top_n={topN}");
+            var response = await _httpClient.GetAsync($"http://localhost:5001/recommend/collaborative?user_id={userId}&top_n={topN}");
             var jsonString = await response.Content.ReadAsStringAsync();
             var recommendations = JsonConvert.DeserializeObject<List<MovieRecommendation>>(jsonString);
             return Ok(recommendations);
@@ -37,7 +37,7 @@ namespace NicheMovies.API.Controllers
         [HttpGet("hybrid")]
         public async Task<IActionResult> GetHybridRecommendations(int userId, int topN = 5)
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5001/recommend/hybrid?user_id=1&top_n={topN}");
+            var response = await _httpClient.GetAsync($"http://localhost:5001/recommend/hybrid?user_id={userId}&top_n={topN}");
             var jsonString = await response.Content.ReadAsStringAsync();
             var recommendations = JsonConvert.DeserializeObject<List<MovieRecommendation>>(jsonString);
             return Ok(recommendations);
@@ -64,7 +64,7 @@ namespace NicheMovies.API.Controllers
         [HttpGet("genre-based")]
         public async Task<IActionResult> GetGenreBasedRecommendations()
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5001/recommend/genre-based");
+            var response = await _httpClient.GetAsync($"http://localhost:5001/genre-based");
             var jsonString = await response.Content.ReadAsStringAsync();
             var recommendations = JsonConvert.DeserializeObject<List<MovieRecommendation>>(jsonString);
             return Ok(recommendations);
