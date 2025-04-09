@@ -91,7 +91,8 @@ const AuthPage = ({
 					"isAdmin",
 					data.isAdmin ? "true" : "false"
 				);
-				navigate(data.isAdmin ? "/admin" : "/movies");
+				localStorage.setItem("userId", data.userId.toString());
+		navigate(data.isAdmin ? "/admin" : "/movies");
 			} else {
 				localStorage.setItem("isLoggedIn", "true");
 				localStorage.setItem("isAdmin", "false");
@@ -100,7 +101,8 @@ const AuthPage = ({
 				sessionStorage.setItem("justSignedUp", "true");
 				localStorage.setItem("userEmail", email);
 
-				navigate("/movies");
+				localStorage.setItem("userId", data.userId.toString());
+		navigate("/movies");
 			}
 		} catch (err) {
 			console.error(err);

@@ -102,7 +102,8 @@ namespace NicheMovies.API.Controllers
 			        message = "Login successful",
 			        name = user.Name,
 			        email = user.Email,
-			        isAdmin = user.Admin
+			        isAdmin = user.Admin,
+                    userId = user.UserId
 		        });
 	        }
 	        catch (Exception ex)
@@ -327,6 +328,47 @@ namespace NicheMovies.API.Controllers
 	        Console.WriteLine($"[MFA VERIFIED] User {user.Email} enabled MFA.");
 	        return Ok(new { message = "MFA enabled successfully." });
         }
+
+        
+        [HttpPost("/rate")]
+        public IActionResult RateMovie([FromBody] MovieRating request)
+        {
+	        var userId = request.UserId;
+	        var showId = request.ShowId;
+	        var rating = request.Rating;
+
+	        var existing = _movieContext.MoviesRatings
+		        .FirstOrDefault(r => r.UserId == userId && r.ShowId == showId);
+
+	        if (existing != null)
+	        {
+		        existing.Rating = rating;
+	        }
+	        else
+	        {
+		        _movieContext.MoviesRatings.Add(new MovieRating
+		        {
+			        UserId = userId,
+			        ShowId = showId,
+			        Rating = rating
+		        });
+	        }
+
+	        _movieContext.SaveChanges();
+	        return Ok(new { message = "Rating saved" });
+        }
+        [HttpGet("GetRating")]
+        public IActionResult GetRating(int userId, string showId)
+        {
+	        var rating = _movieContext.MoviesRatings
+		        .FirstOrDefault(r => r.UserId == userId && r.ShowId == showId);
+
+	        if (rating == null)
+		        return NotFound(new { message = "No rating found" });
+
+	        return Ok(new { rating = rating.Rating });
+        }
+
 
 
     }

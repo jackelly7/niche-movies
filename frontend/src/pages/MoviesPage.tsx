@@ -3,7 +3,7 @@ import axios from "axios";
 import MovieDetails from "../components/MovieDetails";
 
 interface Movie {
-	id: string;
+	showId: string;
 	title: string;
 	releaseYear: number;
 	rating: string;
@@ -206,7 +206,7 @@ const MoviesPage = () => {
 			{selectedMovie && (
 				<MovieDetails
 					movie={{
-						id: selectedMovie.id,
+            showId: selectedMovie.showId,
 						title: selectedMovie.title,
 						posterUrl:
 							selectedMovie.posterUrl ||
