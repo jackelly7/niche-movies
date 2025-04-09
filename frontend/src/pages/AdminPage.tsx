@@ -50,7 +50,7 @@ interface Movie {
 const AdminPage = () => {
 	const [movies, setMovies] = useState<Movie[]>([]);
 	const [page, setPage] = useState(1);
-	const pageSize = 10;
+	const [pageSize, setPageSize] = useState(10);
 	const [total, setTotal] = useState(0);
 
 	const pageOptions = Array.from(
@@ -80,7 +80,7 @@ const AdminPage = () => {
 			}
 		}
 		fetchMovies();
-	}, [page, total]);
+	}, [page, pageSize, total]);
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
@@ -317,6 +317,30 @@ const AdminPage = () => {
 							>
 								Next
 							</button>
+						</div>
+
+						<div className="flex items-center gap-2">
+							<label
+								htmlFor="page-size-select"
+								className="text-sm text-gray-300"
+							>
+								Movies per page:
+							</label>
+							<select
+								id="page-size-select"
+								value={pageSize}
+								onChange={(e) => {
+									setPageSize(Number(e.target.value));
+									setPage(1); // Reset to first page on pageSize change
+								}}
+								className="bg-gray-700 text-white rounded-md px-2 py-1 text-sm"
+							>
+								<option value={5}>5</option>
+								<option value={10}>10</option>
+								<option value={25}>25</option>
+								<option value={50}>50</option>
+								<option value={100}>100</option>
+							</select>
 						</div>
 					</div>
 				</div>

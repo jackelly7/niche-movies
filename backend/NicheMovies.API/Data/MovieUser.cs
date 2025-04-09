@@ -41,4 +41,6 @@ public class MoviesUsers
     [Required]
     [StringLength(30, MinimumLength = 15, ErrorMessage = "Password must be between 15 and 30 characters.")]
     public string Password { get; set; }
+    public string? MfaSecret { get; set; }
+    public bool IsMfaEnabled { get; set; }
 }

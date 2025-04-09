@@ -1,13 +1,70 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/img/icons/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Niche Movies</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" href="/img/icons/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Niche Movies</title>
+
+		<!-- Include CookieConsent.js and styles -->
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css"
+		/>
+	</head>
+	<body>
+		<div id="root"></div>
+		<script type="module" src="/src/main.tsx"></script>
+
+		<!-- CookieConsent JS -->
+		<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+
+		<!-- Google Analytics (only loads after consent) -->
+		<script>
+			function loadGoogleAnalytics() {
+				window.dataLayer = window.dataLayer || [];
+				function gtag() {
+					dataLayer.push(arguments);
+				}
+				gtag("js", new Date());
+				gtag("config", "G-R7ST6SMZLE");
+
+				const script = document.createElement("script");
+				script.setAttribute(
+					"src",
+					"https://www.googletagmanager.com/gtag/js?id=G-R7ST6SMZLE"
+				);
+				script.async = true;
+				document.head.appendChild(script);
+			}
+
+			window.addEventListener("load", function () {
+				window.cookieconsent.initialise({
+					palette: {
+						popup: { background: "#000" },
+						button: { background: "#9db2ff" },
+					},
+					theme: "classic",
+					position: "bottom",
+					content: {
+						message:
+							"We use cookies to ensure you get the best movie experience available for niche movie enthusiasts like yourself 🍿😉.",
+						dismiss: "Got it!",
+						link: "Learn more",
+						href: "/privacy",
+					},
+					onInitialise: function (status) {
+						if (this.hasConsented()) {
+							loadGoogleAnalytics();
+						}
+					},
+					onStatusChange: function (status) {
+						if (this.hasConsented()) {
+							loadGoogleAnalytics();
+						}
+					},
+				});
+			});
+		</script>
+	</body>
 </html>
