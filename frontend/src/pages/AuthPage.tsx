@@ -76,10 +76,12 @@ const AuthPage = ({ isLogin: initialIsLogin = true }: { isLogin?: boolean }) => 
 	  if (initialIsLogin && data.isAdmin) {
 		localStorage.setItem("isLoggedIn", "true");
 		localStorage.setItem("isAdmin", "true");
+		localStorage.setItem("userId", data.userId.toString());
 		navigate("/admin");
 	  } else {
 		localStorage.setItem("isLoggedIn", "true");
 		localStorage.setItem("isAdmin", "false");
+		localStorage.setItem("userId", data.userId.toString());
 		navigate("/movies");
 	  }
 	  
