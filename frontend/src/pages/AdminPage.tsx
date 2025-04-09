@@ -5,13 +5,46 @@ import axios from "axios";
 import Select from "react-select";
 
 interface Movie {
-	id: string;
+	showId: string;
 	title: string;
+	type: string;
 	releaseYear: number;
 	rating: string;
 	description: string;
 	duration: string;
 	cast: string;
+	action: boolean;
+	adventure: boolean;
+	anime_Series_International_TV_Shows: boolean;
+	british_TV_Shows_Docuseries_International_TV_Shows: boolean;
+	children: boolean;
+	comedies: boolean;
+	comedies_Dramas_International_Movies: boolean;
+	comedies_International_Movies: boolean;
+	comedies_Romantic_Movies_: boolean;
+	crime_TV_Shows_Docuseries: boolean;
+	documentaries: boolean;
+	documentaries_International_Movies: boolean;
+	docuseries: boolean;
+	dramas: boolean;
+	dramas_International_Movies: boolean;
+	dramas_Romantic_Movies: boolean;
+	family_Movies: boolean;
+	fantasy: boolean;
+	horror_Movies: boolean;
+	international_Movies_Thrillers: boolean;
+	international_TV_Shows_Romantic_TV_Dramas: boolean;
+	kidsTV: boolean;
+	language_TV_Shows: boolean;
+	musicals: boolean;
+	nature_TV: boolean;
+	reality_TV: boolean;
+	spirituality: boolean;
+	tv_Action: boolean;
+	tv_Comedies: boolean;
+	tv_Dramas: boolean;
+	talk_Shows_TV_Comedies: boolean;
+	thrillers: boolean;
 }
 
 const AdminPage = () => {
@@ -59,7 +92,47 @@ const AdminPage = () => {
 			setFormData(movie);
 		} else {
 			setEditingMovie(null);
-			setFormData({});
+			setFormData({
+				title: "",
+				type: "",
+				releaseYear: new Date().getFullYear(),
+				rating: "",
+				description: "",
+				duration: "",
+				cast: "",
+				action: false,
+				adventure: false,
+				anime_Series_International_TV_Shows: false,
+				british_TV_Shows_Docuseries_International_TV_Shows: false,
+				children: false,
+				comedies: false,
+				comedies_Dramas_International_Movies: false,
+				comedies_International_Movies: false,
+				comedies_Romantic_Movies_: false,
+				crime_TV_Shows_Docuseries: false,
+				documentaries: false,
+				documentaries_International_Movies: false,
+				docuseries: false,
+				dramas: false,
+				dramas_International_Movies: false,
+				dramas_Romantic_Movies: false,
+				family_Movies: false,
+				fantasy: false,
+				horror_Movies: false,
+				international_Movies_Thrillers: false,
+				international_TV_Shows_Romantic_TV_Dramas: false,
+				kidsTV: false,
+				language_TV_Shows: false,
+				musicals: false,
+				nature_TV: false,
+				reality_TV: false,
+				spirituality: false,
+				tv_Action: false,
+				tv_Comedies: false,
+				tv_Dramas: false,
+				talk_Shows_TV_Comedies: false,
+				thrillers: false,
+			});
 		}
 		setIsModalOpen(true);
 	};
@@ -74,7 +147,11 @@ const AdminPage = () => {
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
 		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
+
+		setFormData((prev) => ({
+			...prev,
+			[name]: name === "releaseYear" ? Number(value) : value,
+		}));
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -84,23 +161,25 @@ const AdminPage = () => {
 			if (editingMovie) {
 				// Send updated movie to backend
 				await axios.put(
-					`https://localhost:4000/UpdateMovie/${editingMovie.id}`,
+					`https://localhost:4000/UpdateMovie/${editingMovie.showId}`,
 					formData
 				);
 			} else {
-				// Send new movie to backend
-				const newMovie = {
-					...formData,
-				};
+				// Exclude showId to avoid EF Core tracking error
+				const { showId, ...newMovie } = formData;
 
 				await axios.post("https://localhost:4000/AddMovie", newMovie);
 			}
 
 			// After save, re-fetch the updated movie list
 			const response = await axios.get(
-				"https://localhost:4000/AdminAllMovies"
+				"https://localhost:4000/AdminAllMovies",
+				{
+					params: { page, pageSize },
+				}
 			);
-			setMovies(response.data);
+			setMovies(response.data.data);
+			setTotal(response.data.total);
 
 			handleCloseModal();
 		} catch (err) {
@@ -109,6 +188,7 @@ const AdminPage = () => {
 	};
 
 	const handleDelete = async (movieId: string) => {
+		console.log("Trying to delete ID:", movieId);
 		if (confirm("Are you sure you want to delete this movie?")) {
 			try {
 				await axios.delete(
@@ -116,7 +196,7 @@ const AdminPage = () => {
 				);
 
 				// Update frontend list after successful deletion
-				setMovies((prev) => prev.filter((m) => m.id !== movieId));
+				setMovies((prev) => prev.filter((m) => m.showId !== movieId));
 			} catch (err) {
 				console.error("Error deleting movie:", err);
 				alert("There was a problem deleting the movie.");
@@ -157,7 +237,7 @@ const AdminPage = () => {
 						<tbody>
 							{movies.map((movie) => (
 								<tr
-									key={movie.id}
+									key={movie.showId}
 									className="border-t border-gray-700"
 								>
 									<td className="px-6 py-4">{movie.title}</td>
@@ -179,7 +259,7 @@ const AdminPage = () => {
 											</button>
 											<button
 												onClick={() =>
-													handleDelete(movie.id)
+													handleDelete(movie.showId)
 												}
 												className="p-2 hover:bg-gray-700 rounded-md transition-colors text-red-500"
 											>
@@ -277,18 +357,44 @@ const AdminPage = () => {
 								/>
 							</div>
 
+							<div>
+								<label
+									htmlFor="type"
+									className="block text-sm font-medium mb-1"
+								>
+									Type
+								</label>
+								<select
+									id="type"
+									name="type"
+									value={formData.type || ""}
+									onChange={(e) =>
+										setFormData((prev) => ({
+											...prev,
+											type: e.target.value,
+										}))
+									}
+									className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+									required
+								>
+									<option value="">Select Type</option>
+									<option value="Movie">Movie</option>
+									<option value="TV Show">TV Show</option>
+								</select>
+							</div>
+
 							<div className="grid grid-cols-2 gap-4">
 								<div>
 									<label
-										htmlFor="year"
+										htmlFor="releaseYear"
 										className="block text-sm font-medium mb-1"
 									>
 										Year
 									</label>
 									<input
 										type="number"
-										id="year"
-										name="year"
+										id="releaseYear"
+										name="releaseYear"
 										value={formData.releaseYear || ""}
 										onChange={handleInputChange}
 										className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -367,6 +473,66 @@ const AdminPage = () => {
 									className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
 									required
 								/>
+							</div>
+
+							<div>
+								<h3 className="font-bold text-lg mb-2">
+									Categories
+								</h3>
+								<div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+									{[
+										"action",
+										"adventure",
+										"anime_Series_International_TV_Shows",
+										"british_TV_Shows_Docuseries_International_TV_Shows",
+										"children",
+										"comedies",
+										"comedies_Dramas_International_Movies",
+										"comedies_International_Movies",
+										"comedies_Romantic_Movies_",
+										"crime_TV_Shows_Docuseries",
+										"documentaries",
+										"documentaries_International_Movies",
+										"docuseries",
+										"dramas",
+										"dramas_International_Movies",
+										"dramas_Romantic_Movies",
+										"family_Movies",
+										"fantasy",
+										"horror_Movies",
+										"international_Movies_Thrillers",
+										"international_TV_Shows_Romantic_TV_Dramas",
+										"kidsTV",
+										"language_TV_Shows",
+										"musicals",
+										"nature_TV",
+										"reality_TV",
+										"spirituality",
+										"tv_Action",
+										"tv_Comedies",
+										"tv_Dramas",
+										"talk_Shows_TV_Comedies",
+										"thrillers",
+									].map((key) => (
+										<label
+											key={key}
+											className="flex items-center gap-2"
+										>
+											<input
+												type="checkbox"
+												name={key}
+												checked={(formData as any)[key]}
+												onChange={(e) =>
+													setFormData((prev) => ({
+														...prev,
+														[key]: e.target.checked,
+													}))
+												}
+											/>
+											{key.replace(/_/g, " ")}
+										</label>
+									))}
+								</div>
 							</div>
 
 							<div className="flex justify-end gap-4 mt-6">

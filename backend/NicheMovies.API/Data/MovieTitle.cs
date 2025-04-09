@@ -6,7 +6,7 @@ public class MovieTitle
 {
     [Key]
     [Column("show_id")]
-    public int ShowId { get; set; }
+    public string? ShowId { get; set; }
 
     [Required]
     [Column("type")]
