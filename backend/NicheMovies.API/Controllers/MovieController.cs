@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NicheMovies.API.Data;
 using Microsoft.EntityFrameworkCore;
+using OtpNet;
 
 namespace NicheMovies.API.Controllers
 {
@@ -52,6 +53,8 @@ namespace NicheMovies.API.Controllers
                     City = request.City,
                     State = request.State,
                     Zip = request.Zip,
+                    MfaSecret = null,
+                    IsMfaEnabled = false,
                 };
 
                 _movieContext.MovieUser.Add(user);
@@ -75,30 +78,53 @@ namespace NicheMovies.API.Controllers
         [HttpPost("/login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            try
-            {
-                var user = _movieContext.MovieUser
-                    .FirstOrDefault(u => u.Email == request.Email);
+	        try
+	        {
+		        var user = _movieContext.MovieUser
+			        .FirstOrDefault(u => u.Email == request.Email);
 
-                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
-                {
-                    return Unauthorized(new { message = "Invalid email or password." });
-                }
+		        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+		        {
+			        return Unauthorized(new { message = "Invalid email or password." });
+		        }
 
-                return Ok(new
-                {
-                    message = "Login successful",
-                    name = user.Name,
-                    email = user.Email,
-                    isAdmin = user.Admin,
+		        if (user.IsMfaEnabled)
+		        {
+			        return Ok(new
+			        {
+				        mfaRequired = true,
+				        email = user.Email
+			        });
+		        }
+
+		        return Ok(new
+		        {
+			        message = "Login successful",
+			        name = user.Name,
+			        email = user.Email,
+			        isAdmin = user.Admin,
                     userId = user.UserId
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Login Error] {ex.Message}");
-                return StatusCode(500, new { message = "Something went wrong during login." });
-            }
+		        });
+	        }
+	        catch (Exception ex)
+	        {
+		        Console.WriteLine($"[Login Error] {ex.Message}");
+		        return StatusCode(500, new { message = "Something went wrong during login." });
+	        }
+        }
+        
+        [HttpPost("login-mfa")]
+        public IActionResult LoginMfa([FromBody] MfaVerifyDto dto)
+        {
+	        var user = _movieContext.MovieUser.FirstOrDefault(u => u.Email == dto.Email);
+	        if (user == null || string.IsNullOrEmpty(user.MfaSecret)) return Unauthorized();
+
+	        var totp = new Totp(Base32Encoding.ToBytes(user.MfaSecret));
+	        bool isValid = totp.VerifyTotp(dto.Code, out _, new VerificationWindow(2, 2));
+
+	        if (!isValid) return Unauthorized(new { message = "Invalid MFA code." });
+
+	        return Ok(new { isAdmin = user.Admin });
         }
         
         [HttpGet("AllMovies")]
@@ -256,6 +282,53 @@ namespace NicheMovies.API.Controllers
 
             return NoContent();
         }
+        
+        [HttpPost("setup-mfa")]
+        public IActionResult SetupMfa([FromBody] string email)
+        {
+	        var user = _movieContext.MovieUser.FirstOrDefault(u => u.Email == email);
+	        if (user == null) return NotFound("User not found");
+
+	        // Generate secret
+	        var secretKey = KeyGeneration.GenerateRandomKey(20);
+	        var base32Secret = Base32Encoding.ToString(secretKey);
+
+	        // Save it to the user
+	        user.MfaSecret = base32Secret;
+	        _movieContext.SaveChanges();
+
+	        // Generate the QR code link for Google Authenticator
+	        var otpUri = new OtpUri(OtpType.Totp, base32Secret, user.Email, "Niche Movies");
+	        var qrCodeUrl = $"https://api.qrserver.com/v1/create-qr-code/?data={Uri.EscapeDataString(otpUri.ToString())}";
+
+	        return Ok(new { qrCodeUrl, secret = base32Secret });
+        }
+
+        [HttpPost("verify-mfa-setup")]
+        public IActionResult VerifyMfaSetup([FromBody] MfaVerifyDto dto)
+        {
+	        var user = _movieContext.MovieUser.FirstOrDefault(u => u.Email == dto.Email);
+	        if (user == null || string.IsNullOrEmpty(user.MfaSecret))
+	        {
+		        return BadRequest(new { message = "User not found or MFA not set up." });
+	        }
+
+	        var totp = new Totp(Base32Encoding.ToBytes(user.MfaSecret));
+	        bool isValid = totp.VerifyTotp(dto.Code, out _, new VerificationWindow(2, 2));
+
+	        if (!isValid)
+	        {
+		        Console.WriteLine($"[MFA VERIFY FAIL] Code: {dto.Code}");
+		        return Unauthorized(new { message = "Invalid MFA code." });
+	        }
+
+	        user.IsMfaEnabled = true;
+	        _movieContext.SaveChanges();
+
+	        Console.WriteLine($"[MFA VERIFIED] User {user.Email} enabled MFA.");
+	        return Ok(new { message = "MFA enabled successfully." });
+        }
+
         
         [HttpPost("/rate")]
         public IActionResult RateMovie([FromBody] MovieRating request)

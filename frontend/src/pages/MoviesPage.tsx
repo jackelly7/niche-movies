@@ -64,6 +64,35 @@ const MoviesPage = () => {
 	const [posters, setPosters] = useState<string[]>([]);
 	const [loading, setLoading] = useState(true); // Optional: loading spinner
 	const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+	const [showMfaPrompt, setShowMfaPrompt] = useState(false);
+	const [showMfaSetup, setShowMfaSetup] = useState(false);
+	const [qrCodeUrl, setQrCodeUrl] = useState("");
+	const [mfaCode, setMfaCode] = useState("");
+	const [mfaSecret, setMfaSecret] = useState("");
+	const [email, setEmail] = useState(localStorage.getItem("userEmail") || "");
+
+	useEffect(() => {
+		const justSignedUp = sessionStorage.getItem("justSignedUp");
+
+		if (justSignedUp === "true") {
+			setShowMfaPrompt(true);
+			sessionStorage.removeItem("justSignedUp");
+		}
+	}, []);
+
+	const handleMfaSetup = async () => {
+		const res = await fetch("https://localhost:4000/setup-mfa", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(email),
+		});
+
+		const data = await res.json();
+		setQrCodeUrl(data.qrCodeUrl);
+		setMfaSecret(data.secret);
+		setShowMfaPrompt(false);
+		setShowMfaSetup(true);
+	};
 
 	function getFileNameFromUrl(url: string) {
 		return url.split("/").pop()?.split(".")[0] ?? "";
@@ -195,6 +224,106 @@ const MoviesPage = () => {
 					}}
 					onClose={() => setSelectedMovie(null)}
 				/>
+			)}
+
+			{showMfaPrompt && (
+				<div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+					<div className="bg-gray-800 p-6 rounded-lg max-w-sm text-white text-center space-y-4">
+						<h2 className="text-xl font-bold">
+							🎉 Account Created!
+						</h2>
+						<p>Your account has been created successfully.</p>
+						<p>
+							Would you like to enable Multi-Factor Authentication
+							(MFA) now?
+						</p>
+						<div className="flex justify-center space-x-4">
+							<button
+								className="bg-blue-600 px-4 py-2 rounded"
+								onClick={handleMfaSetup}
+							>
+								Yes, enable MFA
+							</button>
+							<button
+								className="bg-gray-600 px-4 py-2 rounded"
+								onClick={() => setShowMfaPrompt(false)}
+							>
+								Maybe later
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* MFA Setup Modal */}
+
+			{showMfaSetup && (
+				<div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+					<div className="bg-gray-800 p-6 rounded-lg max-w-sm text-white text-center space-y-4">
+						<h2 className="text-xl font-bold">Set Up MFA</h2>
+						<p>
+							Scan the QR code below in your Google Authenticator
+							app:
+						</p>
+						<img
+							src={qrCodeUrl}
+							alt="QR Code"
+							className="mx-auto"
+						/>
+						<p className="text-sm text-gray-400">
+							Secret: <code>{mfaSecret}</code>
+						</p>
+
+						<input
+							type="text"
+							placeholder="Enter 6-digit code"
+							value={mfaCode}
+							onChange={(e) => setMfaCode(e.target.value)}
+							className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400"
+						/>
+
+						<div className="flex justify-center space-x-4">
+							<button
+								className="bg-green-600 px-4 py-2 rounded"
+								onClick={async () => {
+									const res = await fetch(
+										"https://localhost:4000/verify-mfa-setup",
+										{
+											method: "POST",
+											headers: {
+												"Content-Type":
+													"application/json",
+											},
+											body: JSON.stringify({
+												email,
+												code: mfaCode,
+											}),
+										}
+									);
+
+									const result = await res.json();
+									if (res.ok) {
+										alert("✅ MFA Enabled Successfully!");
+										setShowMfaSetup(false);
+									} else {
+										alert(
+											result.message ||
+												"MFA setup failed."
+										);
+									}
+								}}
+							>
+								Confirm
+							</button>
+							<button
+								className="bg-gray-600 px-4 py-2 rounded"
+								onClick={() => setShowMfaSetup(false)}
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				</div>
 			)}
 		</>
 	);
