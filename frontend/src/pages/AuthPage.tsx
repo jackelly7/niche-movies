@@ -24,27 +24,27 @@ const AuthPage = ({
 	const expirationTime = new Date(now.getTime() + 1 * 60 * 1000); // 1 min for testing
 
 
-	const handleStreamingChange = (service: string) => {
-		setStreamingServices((prev) =>
-			prev.includes(service)
-				? prev.filter((s) => s !== service)
-				: [...prev, service]
-		);
-	};
+  const handleStreamingChange = (service: string) => {
+    setStreamingServices((prev) =>
+      prev.includes(service)
+        ? prev.filter((s) => s !== service)
+        : [...prev, service]
+    );
+  };
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-		if (!initialIsLogin && (password.length < 15 || password.length > 30)) {
-			setPasswordError("Password must be between 15 and 30 characters.");
-			return;
-		}
+    if (!initialIsLogin && (password.length < 15 || password.length > 30)) {
+      setPasswordError("Password must be between 15 and 30 characters.");
+      return;
+    }
 
-		setPasswordError("");
+    setPasswordError("");
 
-		const endpoint = initialIsLogin
-			? "https://localhost:4000/login"
-			: "https://localhost:4000/register";
+    const endpoint = initialIsLogin
+      ? "https://localhost:4000/login"
+      : "https://localhost:4000/register";
 
 		const body = initialIsLogin
 			? { email, password }
@@ -75,12 +75,12 @@ const AuthPage = ({
 				body: JSON.stringify(body),
 			});
 
-			const data = await res.json();
+      const data = await res.json();
 
-			if (!res.ok) {
-				alert(data.message || "Something went wrong.");
-				return;
-			}
+      if (!res.ok) {
+        alert(data.message || "Something went wrong.");
+        return;
+      }
 
 			if (initialIsLogin) {
 				if (data.mfaRequired) {
@@ -535,34 +535,28 @@ const AuthPage = ({
 						</>
 					)}
 
-					<div>
-						<button
-							type="submit"
-							className="niche-blue-bkg w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
-						>
-							{initialIsLogin ? "Sign in" : "Create account"}
-						</button>
-					</div>
-				</form>
+          <div>
+            <button
+              type="submit"
+              className="niche-blue-bkg w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              {initialIsLogin ? "Sign in" : "Create account"}
+            </button>
+          </div>
+        </form>
 
-				<div className="text-sm text-center">
-					<Link
-						to="/privacy"
-						className="text-gray-400 niche-blue-hover-dark"
-					>
-						Privacy Policy
-					</Link>
-					{" | "}
-					<Link
-						to="/terms"
-						className="text-gray-400 niche-blue-hover-dark"
-					>
-						Terms of Use
-					</Link>
-				</div>
-			</div>
-		</div>
-	);
+        <div className="text-sm text-center">
+          <Link to="/privacy" className="text-gray-400 niche-blue-hover-dark">
+            Privacy Policy
+          </Link>
+          {" | "}
+          <Link to="/terms" className="text-gray-400 niche-blue-hover-dark">
+            Terms of Use
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default AuthPage;
