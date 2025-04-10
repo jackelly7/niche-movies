@@ -105,7 +105,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 		async function fetchSimilarMovies() {
 			try {
 				const response = await axios.get(
-					`https://niche-movies-recommender-api-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/movie-to-movie?movie_title=${encodeURIComponent(movie.title)}&top_n=5`
+					`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/movie-to-movie?movie_title=${encodeURIComponent(movie.title)}&top_n=5`
 				);
 				setSimilarMovies(response.data);
 			} catch (error) {
