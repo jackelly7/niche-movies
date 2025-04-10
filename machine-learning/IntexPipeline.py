@@ -34,7 +34,37 @@ import numpy as np
 
 # Preprocessing
 movies = titles.copy()
-movies['combined_features'] = movies['description'].fillna('')
+# Create a new "genre_string" column first
+genre_keys = [
+    "Action", "Adventure", "Anime Series International TV Shows", 
+    "British TV Shows Docuseries International TV Shows", "Children", 
+    "Comedies", "Comedies Dramas International Movies", 
+    "Comedies International Movies", "Comedies Romantic Movies", 
+    "Crime TV Shows Docuseries", "Documentaries", 
+    "Documentaries International Movies", "Docuseries", "Dramas", 
+    "Dramas International Movies", "Dramas Romantic Movies", 
+    "Family Movies", "Fantasy", "Horror Movies", 
+    "International Movies Thrillers", 
+    "International TV Shows Romantic TV Shows TV Dramas", 
+    "Kids' TV", "Language TV Shows", "Musicals", "Nature TV", 
+    "Reality TV", "Spirituality", "TV Action", "TV Comedies", 
+    "TV Dramas", "Talk Shows TV Comedies", "Thrillers"
+]
+
+def combine_genres(row):
+    return " ".join([genre for genre in genre_keys if row.get(genre, 0) == 1])
+
+# Apply it to every row
+movies['genre_string'] = movies.apply(combine_genres, axis=1)
+
+# Now build your combined features
+movies['combined_features'] = (
+    movies['title'].fillna('') + ' ' +
+    movies['genre_string'].fillna('') + ' ' +
+    movies['description'].fillna('') + ' ' +
+    movies['cast'].fillna('') + ' ' +
+    movies['director'].fillna('')
+)
 
 # TF-IDF Vectorizer on 'description'
 tfidf = TfidfVectorizer(stop_words='english')
@@ -50,20 +80,30 @@ user_item_matrix = ratings.pivot_table(index='user_id', columns='show_id', value
 
 def content_based_recommendation(user_id, top_n=10):
     if user_id not in user_item_matrix.index:
-        return ["User not found."]
+        return [], "Unknown"
 
     user_ratings = user_item_matrix.loc[user_id]
     rated_show_ids = user_ratings.dropna().index.tolist()
 
+    # 👇 Pick the highest-rated show (or just the first one)
+    if rated_show_ids:
+        based_on_show_id = rated_show_ids[0]
+        based_on_movie_row = movies[movies['show_id'] == based_on_show_id]
+        if not based_on_movie_row.empty:
+            based_on_movie_title = based_on_movie_row.iloc[0]['title']
+        else:
+            based_on_movie_title = "Unknown"
+    else:
+        based_on_movie_title = "Unknown"
+
     content_scores = np.zeros(movies.shape[0])
 
-    for show_id in rated_show_ids:
+    for show_id, rating in user_ratings.dropna().items():
         movie_idx_list = movies.index[movies['show_id'] == show_id].tolist()
-        if movie_idx_list:  # <--- this must be inside the loop!
+        if movie_idx_list:
             movie_idx = movie_idx_list[0]
             if movie_idx < len(content_sim):
-                content_scores += content_sim[movie_idx]
-
+                content_scores += rating * content_sim[movie_idx]
 
 
     content_scores = content_scores / (len(rated_show_ids) + 1e-9)
@@ -72,15 +112,17 @@ def content_based_recommendation(user_id, top_n=10):
     scores_df = scores_df.sort_values(by='score', ascending=False)
 
     recommended = movies[movies['show_id'].isin(scores_df['show_id']) & (~movies['show_id'].isin(rated_show_ids))]
+
     return recommended[['show_id', 'title', 'description', 'director', 'cast', 'release_year', 'rating', 'duration',
-             'Action', 'Adventure', 'Anime Series International TV Shows', 'British TV Shows Docuseries International TV Shows',
-             'Children', 'Comedies', 'Comedies Dramas International Movies', 'Comedies International Movies',
-             'Comedies Romantic Movies', 'Crime TV Shows Docuseries', 'Documentaries',
-             'Documentaries International Movies', 'Docuseries', 'Dramas', 'Dramas International Movies',
-             'Dramas Romantic Movies', 'Family Movies', 'Fantasy', 'Horror Movies', 'International Movies Thrillers',
-             'International TV Shows Romantic TV Shows TV Dramas', "Kids' TV", 'Language TV Shows', 'Musicals', 'Nature TV',
-             'Reality TV', 'Spirituality', 'TV Action', 'TV Comedies', 'TV Dramas', 'Talk Shows TV Comedies', 'Thrillers'
-            ]].head(top_n).reset_index(drop=True)
+        'Action', 'Adventure', 'Anime Series International TV Shows', 'British TV Shows Docuseries International TV Shows',
+        'Children', 'Comedies', 'Comedies Dramas International Movies', 'Comedies International Movies',
+        'Comedies Romantic Movies', 'Crime TV Shows Docuseries', 'Documentaries',
+        'Documentaries International Movies', 'Docuseries', 'Dramas', 'Dramas International Movies',
+        'Dramas Romantic Movies', 'Family Movies', 'Fantasy', 'Horror Movies', 'International Movies Thrillers',
+        'International TV Shows Romantic TV Shows TV Dramas', "Kids' TV", 'Language TV Shows', 'Musicals', 'Nature TV',
+        'Reality TV', 'Spirituality', 'TV Action', 'TV Comedies', 'TV Dramas', 'Talk Shows TV Comedies', 'Thrillers'
+    ]].head(top_n).reset_index(drop=True), based_on_movie_title
+
 
 # %% [markdown]
 # Collaborative Filter
