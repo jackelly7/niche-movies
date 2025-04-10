@@ -18,7 +18,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:3000", "http://localhost:5001", "https://nichemovies.pro", "https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
