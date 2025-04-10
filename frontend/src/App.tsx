@@ -1,10 +1,16 @@
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	useNavigate,
+} from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import MoviesPage from "./pages/MoviesPage";
+import AllMoviesPage from "./pages/AllMoviesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import ScrollToTop from "./components/ScrollToTop";
@@ -33,8 +39,10 @@ function AppContent() {
 		const resetSessionExpiration = () => {
 			const now = new Date();
 			const newExpiration = new Date(now.getTime() + 30 * 60 * 1000); // set to 30 minutes
-			localStorage.setItem("sessionExpiresAt", newExpiration.toISOString());
-
+			localStorage.setItem(
+				"sessionExpiresAt",
+				newExpiration.toISOString()
+			);
 		};
 
 		checkSessionTimeout();
@@ -62,9 +70,16 @@ function AppContent() {
 			<main className="flex-grow">
 				<Routes>
 					<Route path="/" element={<LandingPage />} />
-					<Route path="/login" element={<AuthPage isLogin={true} />} />
-					<Route path="/register" element={<AuthPage isLogin={false} />} />
-					<Route path="/movies" element={<MoviesPage />} />
+					<Route
+						path="/login"
+						element={<AuthPage isLogin={true} />}
+					/>
+					<Route
+						path="/register"
+						element={<AuthPage isLogin={false} />}
+					/>
+					<Route path="/home" element={<MoviesPage />} />
+					<Route path="/all-movies" element={<AllMoviesPage />} />
 					<Route path="/admin" element={<AdminPage />} />
 					<Route path="/privacy" element={<PrivacyPage />} />
 					<Route path="/terms" element={<TermsPage />} />

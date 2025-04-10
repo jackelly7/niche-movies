@@ -31,14 +31,6 @@ const Footer = () => {
 							</li>
 							<li>
 								<Link
-									to="/movies"
-									className="niche-blue-hover-dark transition-colors"
-								>
-									Movies
-								</Link>
-							</li>
-							<li>
-								<Link
 									to="/login"
 									className="niche-blue-hover-dark transition-colors"
 								>

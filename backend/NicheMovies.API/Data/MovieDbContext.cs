@@ -14,9 +14,3 @@ public class MovieDbContext: DbContext
     public DbSet<MovieRating> MoviesRatings { get; set; }
 
 }
-
-
-
-
-
-    
