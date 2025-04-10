@@ -73,7 +73,7 @@ const MoviesPage = () => {
 	}, []);
 	const handleMfaSetup = async () => {
 		const res = await fetch(
-			"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/setup-mfa",
+			"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/setup-mfa",
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -119,14 +119,14 @@ const MoviesPage = () => {
 		async function loadData() {
 			try {
 				const postersResponse = await axios.get(
-					"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/poster"
+					"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/poster"
 				);
 				const posterUrls: string[] = postersResponse.data;
 				setPosters(posterUrls);
 
 				if (email) {
 					const userIdResponse = await axios.get(
-						`https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/get-user-id-by-email?email=${email}`
+						`https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/get-user-id-by-email?email=${email}`
 					);
 					const fetchedUserId = userIdResponse.data;
 					setUserId(fetchedUserId);
@@ -502,7 +502,7 @@ const MoviesPage = () => {
 								className="bg-green-600 px-4 py-2 rounded"
 								onClick={async () => {
 									const res = await fetch(
-										"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/verify-mfa-setup",
+										"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/verify-mfa-setup",
 										{
 											method: "POST",
 											headers: {

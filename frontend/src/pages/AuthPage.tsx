@@ -42,8 +42,8 @@ const AuthPage = ({
 		setPasswordError("");
 
 		const endpoint = initialIsLogin
-			? "https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/login"
-			: "https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/register";
+			? "https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/login"
+			: "https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/register";
 
 		const body = initialIsLogin
 			? { email, password }
@@ -146,7 +146,7 @@ const AuthPage = ({
 							onClick={async () => {
 								try {
 									const res = await fetch(
-										"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/login-mfa",
+										"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/login-mfa",
 										{
 											method: "POST",
 											headers: {
