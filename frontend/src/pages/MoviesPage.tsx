@@ -10,6 +10,8 @@ interface Movie {
 	description: string;
 	genre: string[];
 	cast: string[];
+	director: string | null;
+	country: string | null;
 }
 function extractGenresFromPython(movie: any): string[] {
 	const genreKeys = [
@@ -49,6 +51,7 @@ function extractGenresFromPython(movie: any): string[] {
 	const extracted = genreKeys.filter((key) => movie[key] === 1);
 	return extracted.length > 0 ? extracted : ["Unknown Genre"];
 }
+
 const MoviesPage = () => {
 	const [posters, setPosters] = useState<string[]>([]);
 	const [loading, setLoading] = useState(true); // Optional: loading spinner
@@ -429,6 +432,8 @@ const MoviesPage = () => {
 							posterUrl: matchPoster(movie.title, posters),
 							releaseYear: movie.releaseYear,
 							genre: extractGenresFromPython(movie),
+							director: movie.director,
+							country: movie.country,
 							cast:
 								typeof movie.cast === "string"
 									? (movie.cast as string)
