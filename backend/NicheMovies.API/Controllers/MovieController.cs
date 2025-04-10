@@ -128,18 +128,26 @@ namespace NicheMovies.API.Controllers
         }
         
         [HttpGet("AllMovies")]
-        public IActionResult GetAllMovies()
+        public IActionResult GetAllMovies(int page = 1, int limit = 50)
         {
-            var movies = _movieContext.MoviesTitles
-                .OrderBy(m => m.Title)
-                .Take(5)
-                .Select(m => new
+	        if (page < 1) page = 1;
+	        if (limit < 1) limit = 50;
+	        
+	        Console.WriteLine($"➡️ page={page}, limit={limit}");
+
+	        var query = _movieContext.MoviesTitles.OrderBy(m => m.Title);
+	        
+            var movies = query
+	            .Skip((page - 1) * limit)
+	            .Take(limit)
+	            .Select(m => new
                 {
                     m.ShowId,
                     m.Title,
                     m.Description,
                     m.Rating,
                     m.ReleaseYear,
+                    m.Country,
                     m.Director,
                     m.Cast,
                     m.Duration,

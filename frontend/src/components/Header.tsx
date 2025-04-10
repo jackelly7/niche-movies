@@ -51,14 +51,26 @@ const Header = () => {
 						{!isAuthPage && (
 							<>
 								{isLoggedIn && (
-									<button
-										onClick={() =>
-											handleProtectedRoute("/home")
-										}
-										className="niche-blue-hover-dark transition-colors"
-									>
-										Home
-									</button>
+									<>
+										<button
+											onClick={() =>
+												handleProtectedRoute("/home")
+											}
+											className="niche-blue-hover-dark transition-colors"
+										>
+											Home
+										</button>
+										<button
+											onClick={() =>
+												handleProtectedRoute(
+													"/all-movies"
+												)
+											}
+											className="niche-blue-hover-dark transition-colors"
+										>
+											All Movies
+										</button>
+									</>
 								)}
 								{isLoggedIn && isAdminUser && (
 									<Link

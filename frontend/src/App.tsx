@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import MoviesPage from "./pages/MoviesPage";
+import AllMoviesPage from "./pages/AllMoviesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import ScrollToTop from "./components/ScrollToTop";
@@ -78,6 +79,7 @@ function AppContent() {
 						element={<AuthPage isLogin={false} />}
 					/>
 					<Route path="/home" element={<MoviesPage />} />
+					<Route path="/all-movies" element={<AllMoviesPage />} />
 					<Route path="/admin" element={<AdminPage />} />
 					<Route path="/privacy" element={<PrivacyPage />} />
 					<Route path="/terms" element={<TermsPage />} />
