@@ -154,7 +154,14 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 
 		return matchingPoster || "img/no-image-placeholder.png";
 	}
-
+	function formatGenre(genre: string): string {
+		return genre
+			.replace(/_/g, " ") // turn underscores into spaces
+			.split(" ")
+			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	}
+	
 	return (
 		<div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
 			<div className="page-bkg rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-scroll">
@@ -233,12 +240,12 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 									Genre
 								</h3>
 								<p className="text-gray-400">
-									{Array.isArray(movie.genre)
-										? movie.genre.length > 0
-											? movie.genre.join(", ")
-											: "Unknown Genre"
-										: movie.genre || "Unknown Genre"}
-								</p>
+								{Array.isArray(movie.genre)
+	? movie.genre.map(formatGenre).join(", ")
+	: formatGenre(movie.genre || "Unknown Genre")}
+
+</p>
+
 							</div>
 							<div>
 								<h3 className="text-lg font-semibold mb-1">

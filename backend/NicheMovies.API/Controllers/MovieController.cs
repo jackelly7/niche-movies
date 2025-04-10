@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NicheMovies.API.Data;
 using Microsoft.EntityFrameworkCore;
@@ -126,7 +127,7 @@ namespace NicheMovies.API.Controllers
 
 	        return Ok(new { isAdmin = user.Admin });
         }
-		        
+        
 		[HttpGet("AllMovies")]
 		public IActionResult GetAllMovies(int page = 1, int limit = 50, string? genre = null, string? query = null)
 		{
@@ -220,7 +221,6 @@ namespace NicheMovies.API.Controllers
 
 			return Ok(pagedMovies);
 		}
-		
         [HttpGet("AdminAllMovies")]
         public IActionResult GetAdminAllMovies(int page = 1, int pageSize = 10)
         {
@@ -239,7 +239,6 @@ namespace NicheMovies.API.Controllers
                 data = movies,
             });
         }
-        
         [HttpPost("AddMovie")]
         public IActionResult AddMovie([FromBody] MovieTitle newMovie)
         {
@@ -248,7 +247,6 @@ namespace NicheMovies.API.Controllers
 	        _movieContext.SaveChanges();
 	        return Ok(newMovie);
         }
-
         [HttpPut("UpdateMovie/{movieId}")]
 		public IActionResult UpdateMovie(string movieId, [FromBody] MovieTitle updatedMovie)
 		{
