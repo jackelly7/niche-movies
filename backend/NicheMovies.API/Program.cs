@@ -12,9 +12,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("MoviesConnection")));
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors( options =>
 {
-    options.AddDefaultPolicy(policy =>
+
+    options.AddPolicy("mycors", policy =>
     {
         policy.WithOrigins("http://localhost:3000", "http://localhost:5001", "https://nichemovies.pro", "https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net")
             .AllowAnyHeader()
@@ -45,7 +46,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseCors();
+app.UseCors("mycors");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
