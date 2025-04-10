@@ -60,11 +60,14 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 		console.log("📦 Payload being sent:", payload);
 
 		try {
-			const response = await fetch("https://localhost:4000/rate", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			});
+			const response = await fetch(
+				"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/rate",
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(payload),
+				}
+			);
 
 			const result = await response.json();
 			console.log("✅ Server response:", result);
@@ -87,7 +90,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 
 			try {
 				const response = await fetch(
-					`https://localhost:4000/GetRating?userId=${userId}&showId=${movie.showId}`
+					`https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/GetRating?userId=${userId}&showId=${movie.showId}`
 				);
 				if (response.ok) {
 					const data = await response.json();
@@ -124,7 +127,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 		async function loadPosters() {
 			try {
 				const postersResponse = await axios.get(
-					"https://localhost:4000/poster"
+					"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/poster"
 				);
 				setPosters(postersResponse.data);
 			} catch (error) {
@@ -158,10 +161,10 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 		return genre
 			.replace(/_/g, " ") // turn underscores into spaces
 			.split(" ")
-			.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 			.join(" ");
 	}
-	
+
 	return (
 		<div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
 			<div className="page-bkg rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-scroll">
@@ -240,12 +243,14 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 									Genre
 								</h3>
 								<p className="text-gray-400">
-								{Array.isArray(movie.genre)
-	? movie.genre.map(formatGenre).join(", ")
-	: formatGenre(movie.genre || "Unknown Genre")}
-
-</p>
-
+									{Array.isArray(movie.genre)
+										? movie.genre
+												.map(formatGenre)
+												.join(", ")
+										: formatGenre(
+												movie.genre || "Unknown Genre"
+											)}
+								</p>
 							</div>
 							<div>
 								<h3 className="text-lg font-semibold mb-1">

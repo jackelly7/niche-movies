@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const AuthPage = ({
-  isLogin: initialIsLogin = true,
+	isLogin: initialIsLogin = true,
 }: {
-  isLogin?: boolean;
+	isLogin?: boolean;
 }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -42,37 +42,37 @@ const AuthPage = ({
 		setPasswordError("");
 
 		const endpoint = initialIsLogin
-			? "https://localhost:4000/login"
-			: "https://localhost:4000/register";
+			? "https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/login"
+			: "https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/register";
 
-    const body = initialIsLogin
-      ? { email, password }
-      : {
-          email,
-          password,
-          name,
-          phone,
-          age: parseInt(age),
-          gender,
-          city,
-          state,
-          zip: parseInt(zip),
-          netflix: streamingServices.includes("Netflix"),
-          hulu: streamingServices.includes("Hulu"),
-          max: streamingServices.includes("Max"),
-          disneyPlus: streamingServices.includes("Disney+"),
-          amazonPrime: streamingServices.includes("Amazon Prime"),
-          paramountPlus: streamingServices.includes("Paramount+"),
-          appleTVPlus: streamingServices.includes("Apple TV+"),
-          peacock: streamingServices.includes("Peacock"),
-        };
+		const body = initialIsLogin
+			? { email, password }
+			: {
+					email,
+					password,
+					name,
+					phone,
+					age: parseInt(age),
+					gender,
+					city,
+					state,
+					zip: parseInt(zip),
+					netflix: streamingServices.includes("Netflix"),
+					hulu: streamingServices.includes("Hulu"),
+					max: streamingServices.includes("Max"),
+					disneyPlus: streamingServices.includes("Disney+"),
+					amazonPrime: streamingServices.includes("Amazon Prime"),
+					paramountPlus: streamingServices.includes("Paramount+"),
+					appleTVPlus: streamingServices.includes("Apple TV+"),
+					peacock: streamingServices.includes("Peacock"),
+				};
 
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+		try {
+			const res = await fetch(endpoint, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(body),
+			});
 
 			const data = await res.json();
 
@@ -98,7 +98,7 @@ const AuthPage = ({
 					"sessionExpiresAt",
 					expirationTime.toISOString()
 				);
-        localStorage.setItem("userEmail", email);
+				localStorage.setItem("userEmail", email);
 
 				navigate(data.isAdmin ? "/admin" : "/home");
 			} else {
@@ -146,7 +146,7 @@ const AuthPage = ({
 							onClick={async () => {
 								try {
 									const res = await fetch(
-										"https://localhost:4000/login-mfa",
+										"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/login-mfa",
 										{
 											method: "POST",
 											headers: {
@@ -171,7 +171,10 @@ const AuthPage = ({
 											"isAdmin",
 											result.isAdmin ? "true" : "false"
 										);
-                    localStorage.setItem("userEmail", email);
+										localStorage.setItem(
+											"userEmail",
+											email
+										);
 										navigate(
 											result.isAdmin ? "/admin" : "/home"
 										);
