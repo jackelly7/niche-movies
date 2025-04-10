@@ -159,10 +159,9 @@ const MoviesPage = () => {
   async function fetchContentRecommendations(userId: number) {
     try {
       const response = await axios.get(
-        `http://localhost:5001/recommend/content?user_id=${userId}&top_n=10`
+        `https://niche-movies-recommender-api-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/content?user_id=${userId}&top_n=10`
       );
 
-	  
       console.log("Content Recommendations:", response.data);
 
       // Save the "basedOn" movie title separately
