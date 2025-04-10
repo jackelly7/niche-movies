@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5001")
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5001", "https://nichemovies.pro", "https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -37,10 +37,10 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("Content-Security-Policy", 
         "default-src 'self'; " +
         "script-src 'self'; " +
-        "style-src 'self' http://localhost:3000; " +
+        "style-src 'self' http://localhost:3000 https://nichemovies.pro; " +
         "font-src 'self' " +
         "img-src 'self' data:; " +
-        "connect-src 'self' http://localhost:3000 https://localhost:4000;");
+        "connect-src 'self' http://localhost:3000 https://localhost:4000 https://nichemovies.pro;");
     await next();
 });
 
