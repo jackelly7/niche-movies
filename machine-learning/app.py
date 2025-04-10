@@ -7,19 +7,30 @@ import numpy as np
 app = Flask(__name__)
 CORS(app)
 
-df = pd.read_csv('movies_titles.csv')
+df = pd.read_csv('C:/Users/ethan/Downloads//movies_titles.csv')
 df = df.replace({np.nan: None})
 all_movies = df.to_dict(orient='records')
+
+print("Sample movie keys:", all_movies[0].keys())
+print("Sample movie data:", all_movies[0])
+
 
 @app.route('/recommend/content', methods=['GET'])
 def recommend_content():
     user_id = int(request.args.get('user_id'))
     top_n = int(request.args.get('top_n', 10))
-    result = IntexPipeline.content_based_recommendation(user_id, top_n)
+    
+    result, based_on_movie = IntexPipeline.content_based_recommendation(user_id, top_n)
+    
     result = result.rename(columns={
-    'release_year': 'releaseYear'
-})
-    return jsonify(result.to_dict(orient='records'))  
+        'release_year': 'releaseYear',
+        'show_id': 'showId'
+    })
+    
+    return jsonify({
+        'basedOn': based_on_movie,
+        'recommendations': result.to_dict(orient='records')
+    })
 
 @app.route('/recommend/collaborative', methods=['GET'])
 def recommend_collaborative():
@@ -27,7 +38,7 @@ def recommend_collaborative():
     top_n = int(request.args.get('top_n', 10))
     result = IntexPipeline.collaborative_filtering_recommendation(user_id, top_n)
     result = result.rename(columns={
-    'release_year': 'releaseYear'
+    'release_year': 'releaseYear', 'show_id': 'showId'
 })
     return jsonify(result.to_dict(orient='records'))
 
@@ -37,7 +48,7 @@ def recommend_hybrid():
     top_n = int(request.args.get('top_n', 10))
     result = IntexPipeline.hybrid_recommendation(user_id, top_n)
     result = result.rename(columns={
-    'release_year': 'releaseYear'
+    'release_year': 'releaseYear', 'show_id': 'showId'
 })
     return jsonify(result.to_dict(orient='records'))
 
@@ -47,7 +58,7 @@ def recommend_movie_to_movie():
     top_n = int(request.args.get('top_n', 10))
     result = IntexPipeline.movie_to_movie_recommendation(movie_title, top_n)
     result = result.rename(columns={
-    'release_year': 'releaseYear'
+    'release_year': 'releaseYear', 'show_id': 'showId'
 })
     return jsonify(result.to_dict(orient='records'))
 
@@ -58,7 +69,7 @@ def recommend_hidden_gems():
         IntexPipeline.movies
     )
     result = result.rename(columns={
-    'release_year': 'releaseYear'
+    'release_year': 'releaseYear', 'show_id': 'showId'
 })
     return jsonify(result.to_dict(orient='records'))  # Convert DataFrame to JSON
 
@@ -88,4 +99,4 @@ def recommend_genre_based():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5001)
