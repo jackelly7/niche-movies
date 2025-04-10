@@ -7,12 +7,9 @@ import numpy as np
 app = Flask(__name__)
 CORS(app)
 
-df = pd.read_csv('C:/Users/ethan/Downloads//movies_titles.csv')
+df = pd.read_csv('movies_titles.csv')
 df = df.replace({np.nan: None})
 all_movies = df.to_dict(orient='records')
-
-print("Sample movie keys:", all_movies[0].keys())
-print("Sample movie data:", all_movies[0])
 
 
 @app.route('/recommend/content', methods=['GET'])
@@ -76,7 +73,6 @@ def recommend_hidden_gems():
 @app.route('/genre-based', methods=['GET'])
 def recommend_genre_based():
     genre = request.args.get('genre')
-    print("Genre requested:", genre)
 
     if not genre:
         return jsonify([])
@@ -93,10 +89,9 @@ def recommend_genre_based():
         if genre in movie and str(movie[genre]).strip() == "1":
             filtered_movies.append(movie.to_dict())
 
-    print(f"Movies found for {genre}: {len(filtered_movies)}")
     return jsonify(filtered_movies)
 
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run()
