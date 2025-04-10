@@ -148,6 +148,15 @@ const Header = () => {
 									</button>
 									<button
 										onClick={() => {
+											handleProtectedRoute("/all-movies");
+											setIsMenuOpen(false);
+										}}
+										className="niche-blue-hover-dark transition-colors text-left"
+									>
+										All Movies
+									</button>
+									<button
+										onClick={() => {
 											handleProtectedRoute("/search");
 											setIsMenuOpen(false);
 										}}

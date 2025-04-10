@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MovieDetails from "../components/MovieDetails";
+
 interface Movie {
 	showId: string;
 	title: string;
@@ -13,40 +14,40 @@ interface Movie {
 }
 function extractGenresFromPython(movie: any): string[] {
 	const genreKeys = [
-		"Action",
-		"Adventure",
-		"Anime Series International TV Shows",
-		"British TV Shows Docuseries International TV Shows",
-		"Children",
-		"Comedies",
-		"Comedies Dramas International Movies",
-		"Comedies International Movies",
-		"Comedies Romantic Movies",
-		"Crime TV Shows Docuseries",
-		"Documentaries",
-		"Documentaries International Movies",
-		"Docuseries",
-		"Dramas",
-		"Dramas International Movies",
-		"Dramas Romantic Movies",
-		"Family Movies",
-		"Fantasy",
-		"Horror Movies",
-		"International Movies Thrillers",
-		"International TV Shows Romantic TV Shows TV Dramas",
-		"Kids' TV",
-		"Language TV Shows",
-		"Musicals",
-		"Nature TV",
-		"Reality TV",
-		"Spirituality",
-		"TV Action",
-		"TV Comedies",
-		"TV Dramas",
-		"Talk Shows TV Comedies",
-		"Thrillers",
+		"action",
+		"adventure",
+		"anime_Series_International_TV_Shows",
+		"british_TV_Shows_Docuseries_International_TV_Shows",
+		"children",
+		"comedies",
+		"comedies_Dramas_International_Movies",
+		"comedies_International_Movies",
+		"comedies_Romantic_Movies",
+		"crime_TV_Shows_Docuseries",
+		"documentaries",
+		"documentaries_International_Movies",
+		"docuseries",
+		"dramas",
+		"dramas_International_Movies",
+		"dramas_Romantic_Movies",
+		"family_Movies",
+		"fantasy",
+		"horror_Movies",
+		"international_Movies_Thrillers",
+		"international_TV_Shows_Romantic_TV_Shows_TV_Dramas",
+		"kidsTV",
+		"language_TV_Shows",
+		"musicals",
+		"nature_TV",
+		"reality_TV",
+		"spirituality",
+		"tV_Action",
+		"tV_Comedies",
+		"tV_Dramas",
+		"talk_Shows_TV_Comedies",
+		"thrillers",
 	];
-	const extracted = genreKeys.filter((key) => movie[key] === 1);
+	const extracted = genreKeys.filter((key) => movie[key] === 1 || movie[key] === true);
 	return extracted.length > 0 ? extracted : ["Unknown Genre"];
 }
 const MoviesPage = () => {
@@ -161,7 +162,7 @@ const MoviesPage = () => {
 	async function fetchContentRecommendations(userId: number) {
 		try {
 			const response = await axios.get(
-				`https://niche-movies-recommender-api-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/content?user_id=${userId}&top_n=10`
+				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/content?user_id=${userId}&top_n=10`
 			);
 			console.log("Content Recommendations:", response.data);
 			const contentWithPosters = response.data.map((movie: any) => ({
@@ -176,7 +177,7 @@ const MoviesPage = () => {
 	async function fetchCollaborativeRecommendations(userId: number) {
 		try {
 			const response = await axios.get(
-				`https://niche-movies-recommender-api-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/collaborative?user_id=${userId}&top_n=10`
+				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/collaborative?user_id=${userId}&top_n=10`
 			);
 			console.log("Collaborative Recommendations:", response.data);
 			const collaborativeWithPosters = response.data.map(
@@ -196,7 +197,7 @@ const MoviesPage = () => {
 	async function fetchHybridRecommendations(userId: number) {
 		try {
 			const response = await axios.get(
-				`https://niche-movies-recommender-api-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/hybrid?user_id=${userId}&top_n=10`
+				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/hybrid?user_id=${userId}&top_n=10`
 			);
 			console.log("Hybrid Recommendations:", response.data);
 			const hybridWithPosters = response.data.map((movie: any) => ({
@@ -211,7 +212,7 @@ const MoviesPage = () => {
 	async function fetchHiddenGemRecommendations() {
 		try {
 			const response = await axios.get(
-				`https://niche-movies-recommender-api-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/hidden-gems`
+				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/hidden-gems`
 			);
 			console.log("Hidden Gems:", response.data);
 			const hiddenGemsWithPosters = response.data.map((movie: any) => ({
@@ -251,9 +252,10 @@ const MoviesPage = () => {
 											<div
 												key={index}
 												className="relative group"
-												onClick={() =>
+												onClick={() => {
+													console.log("🧪 Movie clicked:", movie) // find this later
 													setSelectedMovie(movie)
-												}
+												}}
 											>
 												<div className="aspect-[2/3] rounded-lg overflow-hidden">
 													<img
@@ -410,6 +412,7 @@ const MoviesPage = () => {
 				<MovieDetails
 					movie={{
 						...selectedMovie,
+						showId: selectedMovie.showId, 
 						posterUrl:
 							selectedMovie.posterUrl ||
 							"img/no-image-placeholder.png",
@@ -423,9 +426,11 @@ const MoviesPage = () => {
 								: selectedMovie.cast || [],
 					}}
 					onClose={() => setSelectedMovie(null)}
-					onSimilarMovieClick={(movie) =>
+					onSimilarMovieClick={(movie) => {
+						console.log("🔁 Similar movie clicked:", movie);
 						setSelectedMovie({
 							...movie,
+							showId: movie.showId,
 							posterUrl: matchPoster(movie.title, posters),
 							releaseYear: movie.releaseYear,
 							genre: extractGenresFromPython(movie),
@@ -436,7 +441,7 @@ const MoviesPage = () => {
 											.map((name) => name.trim())
 									: movie.cast || [],
 						})
-					}
+					}}
 				/>
 			)}
 			{showMfaPrompt && (

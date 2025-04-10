@@ -14,44 +14,56 @@ interface Movie {
 }
 
 function extractGenresFromPython(movie: any): string[] {
+	console.log("🧩 Extracting genre for movie:", movie);
+
 	const genreKeys = [
-		"Action",
-		"Adventure",
-		"Anime Series International TV Shows",
-		"British TV Shows Docuseries International TV Shows",
-		"Children",
-		"Comedies",
-		"Comedies Dramas International Movies",
-		"Comedies International Movies",
-		"Comedies Romantic Movies",
-		"Crime TV Shows Docuseries",
-		"Documentaries",
-		"Documentaries International Movies",
-		"Docuseries",
-		"Dramas",
-		"Dramas International Movies",
-		"Dramas Romantic Movies",
-		"Family Movies",
-		"Fantasy",
-		"Horror Movies",
-		"International Movies Thrillers",
-		"International TV Shows Romantic TV Shows TV Dramas",
-		"Kids' TV",
-		"Language TV Shows",
-		"Musicals",
-		"Nature TV",
-		"Reality TV",
-		"Spirituality",
-		"TV Action",
-		"TV Comedies",
-		"TV Dramas",
-		"Talk Shows TV Comedies",
-		"Thrillers",
+		"action",
+		"adventure",
+		"anime series international tv shows",
+		"british tv shows docuseries international tv shows",
+		"children",
+		"comedies",
+		"comedies dramas international movies",
+		"comedies international movies",
+		"comedies romantic movies",
+		"crime tv shows docuseries",
+		"documentaries",
+		"documentaries international movies",
+		"docuseries",
+		"dramas",
+		"dramas international movies",
+		"dramas romantic movies",
+		"family movies",
+		"fantasy",
+		"horror movies",
+		"international movies thrillers",
+		"international tv shows romantic tv shows tv dramas",
+		"kids' tv",
+		"language tv shows",
+		"musicals",
+		"nature tv",
+		"reality tv",
+		"spirituality",
+		"tv action",
+		"tv comedies",
+		"tv dramas",
+		"talk shows tv comedies",
+		"thrillers",
 	];
 
-	const extracted = genreKeys.filter((key) => movie[key] === 1);
+	// Normalize the movie keys
+	const normalized = Object.fromEntries(
+		Object.entries(movie).map(([k, v]) => [k.toLowerCase(), v])
+	);
+
+	const extracted = genreKeys.filter(
+		(key) => normalized[key] === 1 || normalized[key] === true
+	);
+
+	console.log("✅ Genres found:", extracted);
 	return extracted.length > 0 ? extracted : ["Unknown Genre"];
 }
+
 
 function getFileNameFromUrl(url: string) {
 	return url.split("/").pop()?.split(".")[0] ?? "";
