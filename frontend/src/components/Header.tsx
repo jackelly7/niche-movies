@@ -82,7 +82,7 @@ const Header = () => {
 								)}
 								<button
 									onClick={() =>
-										handleProtectedRoute("/search")
+										handleProtectedRoute("/all-movies")
 									}
 									className="niche-blue-hover-dark transition-colors"
 								>
@@ -148,7 +148,7 @@ const Header = () => {
 									</button>
 									<button
 										onClick={() => {
-											handleProtectedRoute("/search");
+											handleProtectedRoute("/all-movies");
 											setIsMenuOpen(false);
 										}}
 										className="niche-blue-hover-dark transition-colors text-left"

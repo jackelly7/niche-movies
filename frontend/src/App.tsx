@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 import {
 	BrowserRouter as Router,
 	Routes,
 	Route,
 	useNavigate,
+	Navigate,
 } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -15,6 +16,19 @@ import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import ScrollToTop from "./components/ScrollToTop";
 import AdminPage from "./pages/AdminPage";
+
+// 🔒 Protects any route that requires login
+const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+	const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+	return isLoggedIn ? <>{children}</> : <Navigate to="/" replace />;
+};
+
+const AdminRoute = ({ children }: { children: ReactNode }) => {
+	const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+	const isAdmin = localStorage.getItem("isAdmin") === "true";
+	return isLoggedIn && isAdmin ? <>{children}</> : <Navigate to="/" replace />;
+};
+
 
 function AppContent() {
 	const navigate = useNavigate();
@@ -38,18 +52,13 @@ function AppContent() {
 
 		const resetSessionExpiration = () => {
 			const now = new Date();
-			const newExpiration = new Date(now.getTime() + 30 * 60 * 1000); // set to 30 minutes
-			localStorage.setItem(
-				"sessionExpiresAt",
-				newExpiration.toISOString()
-			);
+			const newExpiration = new Date(now.getTime() + 30 * 60 * 1000);
+			localStorage.setItem("sessionExpiresAt", newExpiration.toISOString());
 		};
 
 		checkSessionTimeout();
-
 		const interval = setInterval(checkSessionTimeout, 10000);
 
-		// Track user activity to reset session expiration
 		const events = ["click", "keydown", "mousemove", "scroll"];
 		events.forEach((event) =>
 			window.addEventListener(event, resetSessionExpiration)
@@ -70,17 +79,36 @@ function AppContent() {
 			<main className="flex-grow">
 				<Routes>
 					<Route path="/" element={<LandingPage />} />
+					<Route path="/login" element={<AuthPage isLogin={true} />} />
+					<Route path="/register" element={<AuthPage isLogin={false} />} />
+
+					{/* 🔐 Protected routes */}
 					<Route
-						path="/login"
-						element={<AuthPage isLogin={true} />}
+						path="/home"
+						element={
+							<ProtectedRoute>
+								<MoviesPage />
+							</ProtectedRoute>
+						}
 					/>
 					<Route
-						path="/register"
-						element={<AuthPage isLogin={false} />}
+						path="/all-movies"
+						element={
+							<ProtectedRoute>
+								<AllMoviesPage />
+							</ProtectedRoute>
+						}
 					/>
-					<Route path="/home" element={<MoviesPage />} />
-					<Route path="/all-movies" element={<AllMoviesPage />} />
-					<Route path="/admin" element={<AdminPage />} />
+					<Route
+						path="/admin"
+						element={
+							<AdminRoute>
+								<AdminPage />
+							</AdminRoute>
+						}
+					/>
+
+					{/* Public pages */}
 					<Route path="/privacy" element={<PrivacyPage />} />
 					<Route path="/terms" element={<TermsPage />} />
 				</Routes>
