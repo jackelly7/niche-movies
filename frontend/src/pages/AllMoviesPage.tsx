@@ -80,6 +80,7 @@ const AllMoviesPage = () => {
 	const [hasMore, setHasMore] = useState(true);
 
 	useEffect(() => {
+		if (posters.length === 0) return; // Wait for posters
 		const fetchMovies = async () => {
 			setLoading(true);
 			try {
@@ -90,7 +91,10 @@ const AllMoviesPage = () => {
 					}
 				);
 
-				const newMovies = res.data;
+				const newMovies = res.data.map((movie: Movie) => ({
+					...movie,
+					posterUrl: matchPoster(movie.title, posters),
+				}));
 
 				setMovies((prev) => [...prev, ...newMovies]);
 				setHasMore(newMovies.length > 0);
@@ -102,7 +106,7 @@ const AllMoviesPage = () => {
 		};
 
 		fetchMovies();
-	}, [page]);
+	}, [page, posters]);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -120,38 +124,22 @@ const AllMoviesPage = () => {
 	}, [loading, hasMore]);
 
 	useEffect(() => {
-		async function loadAllMovies() {
+		const fetchPosters = async () => {
 			try {
-				const [moviesRes, postersRes] = await Promise.all([
-					axios.get("https://localhost:4000/AllMovies"),
-					axios.get("https://localhost:4000/poster"),
-				]);
-
-				const posterUrls: string[] = postersRes.data;
-
-				const moviesWithPosters = moviesRes.data.map(
-					(movie: Movie) => ({
-						...movie,
-						posterUrl: matchPoster(movie.title, posterUrls),
-					})
+				const postersRes = await axios.get(
+					"https://localhost:4000/poster"
 				);
-
-				setPosters(posterUrls);
-				setMovies(moviesWithPosters);
-			} catch (error) {
-				console.error("Failed to fetch movies or posters", error);
-			} finally {
-				setLoading(false);
+				setPosters(postersRes.data);
+			} catch (err) {
+				console.error("Failed to fetch posters", err);
 			}
-		}
-
-		loadAllMovies();
+		};
+		fetchPosters();
 	}, []);
 
 	return (
 		<div className="pt-20 container mx-auto px-4 pb-10">
 			<h1 className="text-3xl font-bold mb-8 mt-10">All Movies</h1>
-
 			{loading ? (
 				<div className="col-span-full flex justify-center items-center py-20">
 					<div className="w-12 h-12 border-4 border-t-transparent border-gray-600 rounded-full animate-spin" />
@@ -191,30 +179,39 @@ const AllMoviesPage = () => {
 					))}
 				</div>
 			)}
-
 			{selectedMovie && (
 				<MovieDetails
 					movie={{
-						showId: selectedMovie.showId,
-						title: selectedMovie.title,
+						...selectedMovie,
 						posterUrl:
 							selectedMovie.posterUrl ||
 							"img/no-image-placeholder.png",
 						year: selectedMovie.releaseYear,
-						rating: selectedMovie.rating,
-						description: selectedMovie.description,
 						genre: extractGenresFromPython(selectedMovie),
-						cast: Array.isArray(selectedMovie.cast)
-							? selectedMovie.cast
-							: typeof selectedMovie.cast === "string"
-								? selectedMovie.cast
+						cast:
+							typeof selectedMovie.cast === "string"
+								? (selectedMovie.cast as string)
 										.split(",")
-										.map((name: string) => name.trim())
-								: [],
+										.map((name) => name.trim())
+								: selectedMovie.cast || [],
 					}}
 					onClose={() => setSelectedMovie(null)}
+					onSimilarMovieClick={(movie) =>
+						setSelectedMovie({
+							...movie,
+							posterUrl: matchPoster(movie.title, posters),
+							releaseYear: movie.releaseYear, // add this because similar movies use releaseYear not year
+							genre: extractGenresFromPython(movie),
+							cast:
+								typeof movie.cast === "string"
+									? (movie.cast as string)
+											.split(",")
+											.map((name) => name.trim())
+									: movie.cast || [],
+						})
+					}
 				/>
-			)}
+			)}{" "}
 		</div>
 	);
 };
