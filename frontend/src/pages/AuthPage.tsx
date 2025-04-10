@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const AuthPage = ({
-	isLogin: initialIsLogin = true,
+  isLogin: initialIsLogin = true,
 }: {
-	isLogin?: boolean;
+  isLogin?: boolean;
 }) => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -45,34 +45,34 @@ const AuthPage = ({
 			? "https://localhost:4000/login"
 			: "https://localhost:4000/register";
 
-		const body = initialIsLogin
-			? { email, password }
-			: {
-					email,
-					password,
-					name,
-					phone,
-					age: parseInt(age),
-					gender,
-					city,
-					state,
-					zip: parseInt(zip),
-					netflix: streamingServices.includes("Netflix"),
-					hulu: streamingServices.includes("Hulu"),
-					max: streamingServices.includes("Max"),
-					disneyPlus: streamingServices.includes("Disney+"),
-					amazonPrime: streamingServices.includes("Amazon Prime"),
-					paramountPlus: streamingServices.includes("Paramount+"),
-					appleTVPlus: streamingServices.includes("Apple TV+"),
-					peacock: streamingServices.includes("Peacock"),
-				};
+    const body = initialIsLogin
+      ? { email, password }
+      : {
+          email,
+          password,
+          name,
+          phone,
+          age: parseInt(age),
+          gender,
+          city,
+          state,
+          zip: parseInt(zip),
+          netflix: streamingServices.includes("Netflix"),
+          hulu: streamingServices.includes("Hulu"),
+          max: streamingServices.includes("Max"),
+          disneyPlus: streamingServices.includes("Disney+"),
+          amazonPrime: streamingServices.includes("Amazon Prime"),
+          paramountPlus: streamingServices.includes("Paramount+"),
+          appleTVPlus: streamingServices.includes("Apple TV+"),
+          peacock: streamingServices.includes("Peacock"),
+        };
 
-		try {
-			const res = await fetch(endpoint, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(body),
-			});
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
 			const data = await res.json();
 
@@ -98,6 +98,7 @@ const AuthPage = ({
 					"sessionExpiresAt",
 					expirationTime.toISOString()
 				);
+        localStorage.setItem("userEmail", email);
 
 				navigate(data.isAdmin ? "/admin" : "/home");
 			} else {
@@ -170,6 +171,7 @@ const AuthPage = ({
 											"isAdmin",
 											result.isAdmin ? "true" : "false"
 										);
+                    localStorage.setItem("userEmail", email);
 										navigate(
 											result.isAdmin ? "/admin" : "/home"
 										);
