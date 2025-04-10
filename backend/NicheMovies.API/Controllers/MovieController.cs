@@ -126,67 +126,101 @@ namespace NicheMovies.API.Controllers
 
 	        return Ok(new { isAdmin = user.Admin });
         }
-        
-        [HttpGet("AllMovies")]
-        public IActionResult GetAllMovies(int page = 1, int limit = 50)
-        {
-	        if (page < 1) page = 1;
-	        if (limit < 1) limit = 50;
-	        
-	        Console.WriteLine($"➡️ page={page}, limit={limit}");
+		        
+		[HttpGet("AllMovies")]
+		public IActionResult GetAllMovies(int page = 1, int limit = 50, string? genre = null, string? query = null)
+		{
+			if (page < 1) page = 1;
+			if (limit < 1) limit = 50;
 
-	        var query = _movieContext.MoviesTitles.OrderBy(m => m.Title);
-	        
-            var movies = query
-	            .Skip((page - 1) * limit)
-	            .Take(limit)
-	            .Select(m => new
-                {
-                    m.ShowId,
-                    m.Title,
-                    m.Description,
-                    m.Rating,
-                    m.ReleaseYear,
-                    m.Country,
-                    m.Director,
-                    m.Cast,
-                    m.Duration,
-                    m.Action,
-                    m.Adventure,
-                    m.Anime_Series_International_TV_Shows,
-                    m.Children,
-                    m.Comedies,
-                    m.Dramas_International_Movies,
-                    m.Comedies_Dramas_International_Movies,
-                    m.Comedies_International_Movies,
-                    m.Comedies_Romantic_Movies_,
-                    m.Crime_TV_Shows_Docuseries,
-                    m.Documentaries,
-                    m.Documentaries_International_Movies,
-                    m.Docuseries,
-                    m.Dramas,
-                    m.Dramas_Romantic_Movies,
-                    m.Family_Movies,
-                    m.Fantasy,
-                    m.Horror_Movies,
-                    m.International_Movies_Thrillers,
-                    m.International_TV_Shows_Romantic_TV_Dramas,
-                    m.KidsTV,
-                    m.Language_TV_Shows,
-                    m.Musicals,
-                    m.Nature_TV,
-                    m.Reality_TV,
-                    m.Spirituality,
-                    m.TV_Action,
-                    m.TV_Comedies,
-                    m.TV_Dramas,
-                    m.Talk_Shows_TV_Comedies,
-                    m.Thrillers
-                })
-                .ToList();
-            return Ok(movies);
-        }
-        
+			Console.WriteLine($"➡️ page={page}, limit={limit}, genre={genre}, query={query}");
+
+			var moviesQuery = _movieContext.MoviesTitles.AsQueryable();
+
+			// ✅ Genre filter with case-insensitive property match
+			if (!string.IsNullOrEmpty(genre))
+			{
+				var genreProp = typeof(MovieTitle)
+					.GetProperties()
+					.FirstOrDefault(p => string.Equals(p.Name, genre, StringComparison.OrdinalIgnoreCase));
+
+				if (genreProp != null &&
+				    (genreProp.PropertyType == typeof(bool?) || genreProp.PropertyType == typeof(bool)))
+				{
+					moviesQuery = moviesQuery.Where(m => EF.Property<bool>(m, genreProp.Name) == true);
+				}
+				else
+				{
+					Console.WriteLine($"⚠️ Invalid genre key: {genre}");
+				}
+			}
+
+			// ✅ Search filter
+			if (!string.IsNullOrEmpty(query))
+			{
+				query = query.ToLower();
+				moviesQuery = moviesQuery.Where(m =>
+					m.Title.ToLower().Contains(query) ||
+					(m.Director != null && m.Director.ToLower().Contains(query)) ||
+					(m.Cast != null && m.Cast.ToLower().Contains(query)) ||
+					(m.Country != null && m.Country.ToLower().Contains(query))
+				);
+			}
+
+			// ✅ Pagination + projection
+			var pagedMovies = moviesQuery
+				.OrderBy(m => m.Title)
+				.Skip((page - 1) * limit)
+				.Take(limit)
+				.Select(m => new
+				{
+					m.ShowId,
+					m.Title,
+					m.Description,
+					m.Rating,
+					m.ReleaseYear,
+					m.Country,
+					m.Director,
+					m.Cast,
+					m.Duration,
+					m.Action,
+					m.Adventure,
+					m.Anime_Series_International_TV_Shows,
+					m.British_TV_Shows_Docuseries_International_TV_Shows,
+					m.Children,
+					m.Comedies,
+					m.Comedies_Dramas_International_Movies,
+					m.Comedies_International_Movies,
+					m.Comedies_Romantic_Movies_,
+					m.Crime_TV_Shows_Docuseries,
+					m.Documentaries,
+					m.Documentaries_International_Movies,
+					m.Docuseries,
+					m.Dramas,
+					m.Dramas_International_Movies,
+					m.Dramas_Romantic_Movies,
+					m.Family_Movies,
+					m.Fantasy,
+					m.Horror_Movies,
+					m.International_Movies_Thrillers,
+					m.International_TV_Shows_Romantic_TV_Dramas,
+					m.KidsTV,
+					m.Language_TV_Shows,
+					m.Musicals,
+					m.Nature_TV,
+					m.Reality_TV,
+					m.Spirituality,
+					m.TV_Action,
+					m.TV_Comedies,
+					m.TV_Dramas,
+					m.Talk_Shows_TV_Comedies,
+					m.Thrillers
+				})
+				.ToList();
+
+			return Ok(pagedMovies);
+		}
+		
         [HttpGet("AdminAllMovies")]
         public IActionResult GetAdminAllMovies(int page = 1, int pageSize = 10)
         {

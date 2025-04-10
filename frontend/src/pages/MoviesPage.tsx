@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import MovieDetails from "../components/MovieDetails";
 interface Movie {
-  showId: string;
-  title: string;
-  releaseYear: number;
-  rating: string;
-  posterUrl?: string;
-  description: string;
-  genre: string[];
-  cast: string[];
+	showId: string;
+	title: string;
+	releaseYear: number;
+	rating: string;
+	posterUrl?: string;
+	description: string;
+	genre: string[];
+	cast: string[];
+	director: string | null;
+	country: string | null;
 }
 function extractGenresFromPython(movie: any): string[] {
   const genreKeys = [
@@ -49,6 +51,7 @@ function extractGenresFromPython(movie: any): string[] {
   const extracted = genreKeys.filter((key) => movie[key] === 1);
   return extracted.length > 0 ? extracted : ["Unknown Genre"];
 }
+
 const MoviesPage = () => {
   const [posters, setPosters] = useState<string[]>([]);
   const [loading, setLoading] = useState(true); // Optional: loading spinner

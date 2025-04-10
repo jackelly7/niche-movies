@@ -11,9 +11,11 @@ interface Movie {
 	posterUrl: string;
 	year: number;
 	rating: string;
+	genre: string[] | string;
 	description: string;
-	genre: string[];
 	cast: string[];
+	director: string | null;
+	country: string | null;
 }
 
 interface MovieDetailsProps {
@@ -231,7 +233,11 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 									Genre
 								</h3>
 								<p className="text-gray-400">
-									{movie.genre?.join(", ") || "Unknown Genre"}
+									{Array.isArray(movie.genre)
+										? movie.genre.length > 0
+											? movie.genre.join(", ")
+											: "Unknown Genre"
+										: movie.genre || "Unknown Genre"}
 								</p>
 							</div>
 							<div>
