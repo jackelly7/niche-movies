@@ -60,7 +60,7 @@ namespace NicheMovies.API.Controllers
                 _movieContext.MovieUser.Add(user);
                 _movieContext.SaveChanges();
 
-                return Ok(new { message = "User registered successfully." });
+                return Ok(new { userId = user.UserId, message = "User registered successfully." });
             }
             catch (Exception ex)
             {
