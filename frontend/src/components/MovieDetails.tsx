@@ -61,7 +61,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 
 		try {
 			const response = await fetch(
-				"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/rate",
+				"https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/rate",
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 
 			try {
 				const response = await fetch(
-					`https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/GetRating?userId=${userId}&showId=${movie.showId}`
+					`https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/GetRating?userId=${userId}&showId=${movie.showId}`
 				);
 				if (response.ok) {
 					const data = await response.json();
@@ -127,7 +127,7 @@ const MovieDetails: React.FC<MovieDetailsProps> = ({
 		async function loadPosters() {
 			try {
 				const postersResponse = await axios.get(
-					"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/poster"
+					"https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/poster"
 				);
 				setPosters(postersResponse.data);
 			} catch (error) {

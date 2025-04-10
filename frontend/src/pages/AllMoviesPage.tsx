@@ -150,7 +150,7 @@ const AllMoviesPage = () => {
 			setLoading(true);
 			try {
 				const res = await axios.get(
-					"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/AllMovies",
+					"https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/AllMovies",
 					{
 						params: {
 							page,
@@ -210,7 +210,7 @@ const AllMoviesPage = () => {
 		const fetchPosters = async () => {
 			try {
 				const postersRes = await axios.get(
-					"https://niche-movies-backend-new-fhhvc5fsf8hhf0ad.eastus-01.azurewebsites.net/poster"
+					"https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/poster"
 				);
 				setPosters(postersRes.data);
 			} catch (err) {
