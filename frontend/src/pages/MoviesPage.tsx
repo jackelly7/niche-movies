@@ -90,7 +90,7 @@ const MoviesPage = () => {
 	const [contentRecommendations, setContentRecommendations] = useState<
 		Movie[]
 	>([]);
-	const [movies, setMovies] = useState<Movie[]>([]);
+	// const [movies, setMovies] = useState<Movie[]>([]);
 	const [collaborativeRecommendations, setCollaborativeRecommendations] =
 		useState<Movie[]>([]);
 	const [hybridRecommendations, setHybridRecommendations] = useState<Movie[]>(
@@ -118,30 +118,12 @@ const MoviesPage = () => {
 	useEffect(() => {
 		async function loadData() {
 			try {
-				const moviesResponse = await axios.get(
-					"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/AllMovies"
-				);
-				const loadedMovies = moviesResponse.data;
 				const postersResponse = await axios.get(
 					"https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/poster"
 				);
 				const posterUrls: string[] = postersResponse.data;
-				const moviesWithPosters = loadedMovies.map((movie: Movie) => {
-					const matchingPoster = posterUrls.find((url) => {
-						const posterName = getFileNameFromUrl(url);
-						return (
-							normalizeTitle(posterName) ===
-							normalizeTitle(movie.title)
-						);
-					});
-					return {
-						...movie,
-						posterUrl:
-							matchingPoster || "img/no-image-placeholder.png",
-					};
-				});
-				setMovies(moviesWithPosters);
 				setPosters(posterUrls);
+
 				if (email) {
 					const userIdResponse = await axios.get(
 						`https://niche-movies-backend-hrcybtb2hdeyfmc6.eastus-01.azurewebsites.net/get-user-id-by-email?email=${email}`
@@ -150,7 +132,7 @@ const MoviesPage = () => {
 					setUserId(fetchedUserId);
 				}
 			} catch (err) {
-				console.error("Failed to load movies, posters, or userId", err);
+				console.error("Failed to load posters or userId", err);
 			} finally {
 				setLoading(false);
 			}
