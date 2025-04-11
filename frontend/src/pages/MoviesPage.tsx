@@ -228,7 +228,7 @@ const MoviesPage = () => {
 					{movies.map((movie, index) => (
 						<div
 							key={index}
-							className="flex-shrink-0 snap-start min-w-[40%] sm:min-w-[30%] md:min-w-[20%] lg:min-w-[16%] xl:min-w-[12%] relative group"
+							className="flex-shrink-0 snap-start w-[45%] sm:w-[40%] md:w-[25%] lg:w-[200px] xl:w-[200px] relative group"
 							onClick={() => setSelectedMovie(movie)}
 						>
 							<div className="aspect-[2/3] rounded-lg overflow-hidden">
