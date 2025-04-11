@@ -65,7 +65,7 @@ const AdminPage = () => {
 		async function fetchMovies() {
 			try {
 				const response = await axios.get(
-					"https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/AdminAllMovies",
+					"https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/AdminAllMovies",
 					{
 						params: {
 							page,
@@ -161,7 +161,7 @@ const AdminPage = () => {
 			if (editingMovie) {
 				// Send updated movie to backend
 				await axios.put(
-					`https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/UpdateMovie/${editingMovie.showId}`,
+					`https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/UpdateMovie/${editingMovie.showId}`,
 					formData
 				);
 			} else {
@@ -169,14 +169,14 @@ const AdminPage = () => {
 				const { showId, ...newMovie } = formData;
 
 				await axios.post(
-					"https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/AddMovie",
+					"https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/AddMovie",
 					newMovie
 				);
 			}
 
 			// After save, re-fetch the updated movie list
 			const response = await axios.get(
-				"https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/AdminAllMovies",
+				"https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/AdminAllMovies",
 				{
 					params: { page, pageSize },
 				}
@@ -195,7 +195,7 @@ const AdminPage = () => {
 		if (confirm("Are you sure you want to delete this movie?")) {
 			try {
 				await axios.delete(
-					`https://niche-movies-backend-newnew-axb0fph6c9fpaef6.eastus-01.azurewebsites.net/DeleteMovie/${movieId}`
+					`https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/DeleteMovie/${movieId}`
 				);
 
 				// Update frontend list after successful deletion
