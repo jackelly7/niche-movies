@@ -174,7 +174,7 @@ const MoviesPage = () => {
 	async function fetchCollaborativeRecommendations(userId: number) {
 		try {
 			const response = await axios.get(
-				`https://-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/collaborative?user_id=${userId}&top_n=10`
+				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/collaborative?user_id=${userId}&top_n=10`
 			);
 			const withPosters = response.data.map((movie: any) => ({
 				...movie,
