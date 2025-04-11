@@ -221,7 +221,7 @@ const AdminPage = () => {
 					</button>
 				</div>
 
-				<div className="bg-gray-800 rounded-lg overflow-hidden">
+				<div className="bg-gray-800 rounded-lg overflow-x-auto">
 					<table className="min-w-full">
 						<thead>
 							<tr className="bg-gray-700">
