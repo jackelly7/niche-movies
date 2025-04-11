@@ -154,7 +154,6 @@ const AllMoviesPage = () => {
 		}
 	}, [location]);
 
-
 	useEffect(() => {
 		const fetchMovies = async () => {
 			setLoading(true);
@@ -381,7 +380,7 @@ const MovieCard = ({
 	return (
 		<div
 			ref={ref}
-			className="relative group cursor-pointer"
+			className="relative group cursor-pointer w-full max-w-[200px] mx-auto"
 			onClick={onSelect}
 		>
 			<div className="aspect-[2/3] rounded-lg overflow-hidden bg-gray-900">

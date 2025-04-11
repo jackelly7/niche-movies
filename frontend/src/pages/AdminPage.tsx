@@ -222,7 +222,7 @@ const AdminPage = () => {
 				</div>
 
 				<div className="bg-gray-800 rounded-lg overflow-hidden">
-					<table className="w-full">
+					<table className="min-w-full">
 						<thead>
 							<tr className="bg-gray-700">
 								<th className="px-6 py-4 text-left">

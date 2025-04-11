@@ -224,7 +224,7 @@ const MoviesPage = () => {
 		return (
 			<div className="mb-10">
 				<h2 className="text-2xl font-semibold mb-4">{title}</h2>
-				<div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x snap-mandatory">
+				<div className="flex overflow-x-auto gap-4 pb-2 px-2 scrollbar-hide snap-x snap-mandatory">
 					{movies.map((movie, index) => (
 						<div
 							key={index}
