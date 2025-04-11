@@ -51,7 +51,9 @@ const LandingPage = () => {
 								Start Watching Now
 							</button>
 							<button
-								onClick={() => navigate("/home")}
+								onClick={() => 
+									handleProtectedNavigation("/home")
+								}
 								className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-md font-semibold flex items-center justify-center transition-colors"
 							>
 								Browse Movies

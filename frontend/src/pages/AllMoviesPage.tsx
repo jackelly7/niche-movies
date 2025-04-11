@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useInView } from "react-intersection-observer";
 import MovieDetails from "../components/MovieDetails";
@@ -144,6 +145,15 @@ const AllMoviesPage = () => {
 	const [selectedGenre, setSelectedGenre] = useState("");
 	const [searchQuery, setSearchQuery] = useState("");
 	const genreKey = labelToGenreKey[selectedGenre] ?? "";
+	const location = useLocation();
+	const searchInputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (location.state?.focusSearch) {
+			searchInputRef.current?.focus();
+		}
+	}, [location]);
+
 
 	useEffect(() => {
 		const fetchMovies = async () => {
@@ -284,6 +294,7 @@ const AllMoviesPage = () => {
 				</select>
 				<input
 					type="text"
+					ref={searchInputRef}
 					placeholder="Search by title, director, cast, or country"
 					className="flex-grow px-4 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
 					value={searchQuery}
