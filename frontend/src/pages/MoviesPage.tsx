@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import MovieDetails from "../components/MovieDetails";
+
 interface Movie {
 	showId: string;
 	title: string;
@@ -13,6 +14,7 @@ interface Movie {
 	director: string | null;
 	country: string | null;
 }
+
 function extractGenresFromPython(movie: any): string[] {
 	const genreKeys = [
 		"Action",
@@ -54,7 +56,7 @@ function extractGenresFromPython(movie: any): string[] {
 
 const MoviesPage = () => {
 	const [posters, setPosters] = useState<string[]>([]);
-	const [loading, setLoading] = useState(true); // Optional: loading spinner
+	const [loading, setLoading] = useState(true);
 	const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 	const [showMfaPrompt, setShowMfaPrompt] = useState(false);
 	const [showMfaSetup, setShowMfaSetup] = useState(false);
@@ -63,6 +65,37 @@ const MoviesPage = () => {
 	const [mfaSecret, setMfaSecret] = useState("");
 	const email = localStorage.getItem("userEmail") || "";
 	const [basedOnMovie, setBasedOnMovie] = useState("");
+	const [userId, setUserId] = useState<number | null>(null);
+
+	const [contentRecommendations, setContentRecommendations] = useState<
+		Movie[]
+	>([]);
+	const [collaborativeRecommendations, setCollaborativeRecommendations] =
+		useState<Movie[]>([]);
+	const [hybridRecommendations, setHybridRecommendations] = useState<Movie[]>(
+		[]
+	);
+	const [hiddenGemRecommendations, setHiddenGemRecommendations] = useState<
+		Movie[]
+	>([]);
+
+	function getFileNameFromUrl(url: string) {
+		return url.split("/").pop()?.split(".")[0] ?? "";
+	}
+
+	function normalizeTitle(title: string | undefined) {
+		if (!title) return "";
+		return title.toLowerCase().replace(/[^a-z0-9]/gi, "");
+	}
+
+	function matchPoster(movieTitle: string, posterUrls: string[]): string {
+		const normalizedMovieTitle = normalizeTitle(movieTitle);
+		const matchingPoster = posterUrls.find((url) => {
+			const posterName = getFileNameFromUrl(url);
+			return normalizeTitle(posterName) === normalizedMovieTitle;
+		});
+		return matchingPoster || "img/no-image-placeholder.png";
+	}
 
 	useEffect(() => {
 		const justSignedUp = sessionStorage.getItem("justSignedUp");
@@ -71,6 +104,7 @@ const MoviesPage = () => {
 			sessionStorage.removeItem("justSignedUp");
 		}
 	}, []);
+
 	const handleMfaSetup = async () => {
 		const res = await fetch(
 			"https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/setup-mfa",
@@ -86,50 +120,20 @@ const MoviesPage = () => {
 		setShowMfaPrompt(false);
 		setShowMfaSetup(true);
 	};
-	const [userId, setUserId] = useState<number | null>(null);
-	const [contentRecommendations, setContentRecommendations] = useState<
-		Movie[]
-	>([]);
-	// const [movies, setMovies] = useState<Movie[]>([]);
-	const [collaborativeRecommendations, setCollaborativeRecommendations] =
-		useState<Movie[]>([]);
-	const [hybridRecommendations, setHybridRecommendations] = useState<Movie[]>(
-		[]
-	);
-	const [hiddenGemRecommendations, setHiddenGemRecommendations] = useState<
-		Movie[]
-	>([]);
-	function getFileNameFromUrl(url: string) {
-		return url.split("/").pop()?.split(".")[0] ?? "";
-	}
-	function normalizeTitle(title: string | undefined) {
-		if (!title) return ""; // <-- return empty if no title
-		return title.toLowerCase().replace(/[^a-z0-9]/gi, "");
-	}
-	function matchPoster(movieTitle: string, posterUrls: string[]): string {
-		const normalizedMovieTitle = normalizeTitle(movieTitle);
-		const matchingPoster = posterUrls.find((url) => {
-			const posterName = getFileNameFromUrl(url);
-			return normalizeTitle(posterName) === normalizedMovieTitle;
-		});
-		return matchingPoster || "img/no-image-placeholder.png"; // fallback if no poster
-	}
-	// Fetch movies and posters first
+
 	useEffect(() => {
 		async function loadData() {
 			try {
 				const postersResponse = await axios.get(
 					"https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/poster"
 				);
-				const posterUrls: string[] = postersResponse.data;
-				setPosters(posterUrls);
+				setPosters(postersResponse.data);
 
 				if (email) {
 					const userIdResponse = await axios.get(
 						`https://niche-movies-backend-1-b8f2anendma6dhbd.eastus-01.azurewebsites.net/get-user-id-by-email?email=${email}`
 					);
-					const fetchedUserId = userIdResponse.data;
-					setUserId(fetchedUserId);
+					setUserId(userIdResponse.data);
 				}
 			} catch (err) {
 				console.error("Failed to load posters or userId", err);
@@ -139,7 +143,7 @@ const MoviesPage = () => {
 		}
 		loadData();
 	}, []);
-	// Only fetch recommendations AFTER we have posters and userId
+
 	useEffect(() => {
 		if (userId && posters.length > 0) {
 			fetchContentRecommendations(userId);
@@ -148,26 +152,20 @@ const MoviesPage = () => {
 			fetchHiddenGemRecommendations();
 		}
 	}, [userId, posters]);
+
 	async function fetchContentRecommendations(userId: number) {
 		try {
 			const response = await axios.get(
 				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/content?user_id=${userId}&top_n=10`
 			);
-
-			console.log("Content Recommendations:", response.data);
-
-			// Save the "basedOn" movie title separately
 			setBasedOnMovie(response.data.basedOn);
-
-			// Map over the actual recommendations
-			const contentWithPosters = response.data.recommendations.map(
+			const withPosters = response.data.recommendations.map(
 				(movie: any) => ({
 					...movie,
 					posterUrl: matchPoster(movie.title, posters),
 				})
 			);
-
-			setContentRecommendations(contentWithPosters);
+			setContentRecommendations(withPosters);
 		} catch (error) {
 			console.error("Failed to fetch content recommendations", error);
 		}
@@ -178,14 +176,11 @@ const MoviesPage = () => {
 			const response = await axios.get(
 				`https://-d6bycsbuauhmgya5.eastus-01.azurewebsites.net/recommend/collaborative?user_id=${userId}&top_n=10`
 			);
-			console.log("Collaborative Recommendations:", response.data);
-			const collaborativeWithPosters = response.data.map(
-				(movie: any) => ({
-					...movie,
-					posterUrl: matchPoster(movie.title, posters),
-				})
-			);
-			setCollaborativeRecommendations(collaborativeWithPosters);
+			const withPosters = response.data.map((movie: any) => ({
+				...movie,
+				posterUrl: matchPoster(movie.title, posters),
+			}));
+			setCollaborativeRecommendations(withPosters);
 		} catch (error) {
 			console.error(
 				"Failed to fetch collaborative recommendations",
@@ -193,35 +188,75 @@ const MoviesPage = () => {
 			);
 		}
 	}
+
 	async function fetchHybridRecommendations(userId: number) {
 		try {
 			const response = await axios.get(
 				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/hybrid?user_id=${userId}&top_n=10`
 			);
-			console.log("Hybrid Recommendations:", response.data);
-			const hybridWithPosters = response.data.map((movie: any) => ({
+			const withPosters = response.data.map((movie: any) => ({
 				...movie,
 				posterUrl: matchPoster(movie.title, posters),
 			}));
-			setHybridRecommendations(hybridWithPosters);
+			setHybridRecommendations(withPosters);
 		} catch (error) {
 			console.error("Failed to fetch hybrid recommendations", error);
 		}
 	}
+
 	async function fetchHiddenGemRecommendations() {
 		try {
 			const response = await axios.get(
 				`https://niche-movies-machine-learning-api-ashtcnfzdjh7b9bm.eastus-01.azurewebsites.net/recommend/hidden-gems`
 			);
-			console.log("Hidden Gems:", response.data);
-			const hiddenGemsWithPosters = response.data.map((movie: any) => ({
+			const withPosters = response.data.map((movie: any) => ({
 				...movie,
 				posterUrl: matchPoster(movie.title, posters),
 			}));
-			setHiddenGemRecommendations(hiddenGemsWithPosters);
+			setHiddenGemRecommendations(withPosters);
 		} catch (error) {
 			console.error("Failed to fetch hidden gem recommendations", error);
 		}
+	}
+
+	function renderSection(title: string, movies: Movie[]) {
+		if (movies.length === 0) return null;
+		return (
+			<div className="mb-10">
+				<h2 className="text-2xl font-semibold mb-4">{title}</h2>
+				<div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x snap-mandatory">
+					{movies.map((movie, index) => (
+						<div
+							key={index}
+							className="flex-shrink-0 snap-start min-w-[40%] sm:min-w-[30%] md:min-w-[20%] lg:min-w-[16%] xl:min-w-[12%] relative group"
+							onClick={() => setSelectedMovie(movie)}
+						>
+							<div className="aspect-[2/3] rounded-lg overflow-hidden">
+								<img
+									loading="lazy"
+									src={
+										movie.posterUrl ||
+										"img/no-image-placeholder.png"
+									}
+									alt={movie.title}
+									className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
+								/>
+							</div>
+							<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
+								<div>
+									<h3 className="text-lg font-semibold text-white">
+										{movie.title}
+									</h3>
+									<p className="text-sm text-gray-300">
+										{movie.releaseYear} • {movie.rating}
+									</p>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		);
 	}
 
 	return (
@@ -239,178 +274,23 @@ const MoviesPage = () => {
 					</div>
 				) : (
 					<>
-						{/* Content-Based Recommendations */}
-						{contentRecommendations.length > 0 && (
-							<>
-								<h2 className="text-2xl font-semibold mb-4">
-									Because You Watched{" "}
-									{basedOnMovie || "a movie"}
-								</h2>
-								<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10">
-									{contentRecommendations.map(
-										(movie, index) => (
-											<div
-												key={index}
-												className="relative group"
-												onClick={() =>
-													setSelectedMovie(movie)
-												}
-											>
-												<div className="aspect-[2/3] rounded-lg overflow-hidden">
-													<img
-														loading="lazy"
-														src={
-															movie.posterUrl ||
-															"img/no-image-placeholder.png"
-														}
-														alt={movie.title}
-														className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-													/>
-												</div>
-												<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-													<div>
-														<h3 className="text-lg font-semibold text-white">
-															{movie.title}
-														</h3>
-														<p className="text-sm text-gray-300">
-															{movie.releaseYear}{" "}
-															• {movie.rating}
-														</p>
-													</div>
-												</div>
-											</div>
-										)
-									)}
-								</div>
-							</>
+						{renderSection(
+							`Because You Watched ${basedOnMovie || "a movie"}`,
+							contentRecommendations
 						)}
-						{/* Collaborative Recommendations */}
-						{collaborativeRecommendations.length > 0 && (
-							<>
-								<h2 className="text-2xl font-semibold mb-4">
-									What Others Have Liked
-								</h2>
-								<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-									{collaborativeRecommendations.map(
-										(movie, index) => (
-											<div
-												key={index}
-												className="relative group"
-												onClick={() =>
-													setSelectedMovie(movie)
-												}
-											>
-												<div className="aspect-[2/3] rounded-lg overflow-hidden">
-													<img
-														loading="lazy"
-														src={
-															movie.posterUrl ||
-															"img/no-image-placeholder.png"
-														}
-														alt={movie.title}
-														className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-													/>
-												</div>
-												<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-													<div>
-														<h3 className="text-lg font-semibold text-white">
-															{movie.title}
-														</h3>
-														<p className="text-sm text-gray-300">
-															{movie.releaseYear}{" "}
-															• {movie.rating}
-														</p>
-													</div>
-												</div>
-											</div>
-										)
-									)}
-								</div>
-							</>
+						{renderSection(
+							"What Others Have Liked",
+							collaborativeRecommendations
 						)}
+						{renderSection(
+							"More We Think You'd Love",
+							hybridRecommendations
+						)}
+						{renderSection("Hidden Gems", hiddenGemRecommendations)}
 					</>
 				)}
-				<br />
-				{hybridRecommendations.length > 0 && (
-					<>
-						<h2 className="text-2xl font-semibold mb-4">
-							More We Think You'd Love
-						</h2>
-						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-							{hybridRecommendations.map((movie, index) => (
-								<div
-									key={index}
-									className="relative group"
-									onClick={() => setSelectedMovie(movie)}
-								>
-									<div className="aspect-[2/3] rounded-lg overflow-hidden">
-										<img
-											loading="lazy"
-											src={
-												movie.posterUrl ||
-												"img/no-image-placeholder.png"
-											}
-											alt={movie.title}
-											className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-										/>
-									</div>
-									<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-										<div>
-											<h3 className="text-lg font-semibold text-white">
-												{movie.title}
-											</h3>
-											<p className="text-sm text-gray-300">
-												{movie.releaseYear} •{" "}
-												{movie.rating}
-											</p>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
-					</>
-				)}
-				<br />
-				{hiddenGemRecommendations.length > 0 && (
-					<>
-						<h2 className="text-2xl font-semibold mb-4">
-							Hidden Gems
-						</h2>
-						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-							{hiddenGemRecommendations.map((movie, index) => (
-								<div
-									key={index}
-									className="relative group"
-									onClick={() => setSelectedMovie(movie)}
-								>
-									<div className="aspect-[2/3] rounded-lg overflow-hidden">
-										<img
-											loading="lazy"
-											src={
-												movie.posterUrl ||
-												"img/no-image-placeholder.png"
-											}
-											alt={movie.title}
-											className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-200"
-										/>
-									</div>
-									<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-4">
-										<div>
-											<h3 className="text-lg font-semibold text-white">
-												{movie.title}
-											</h3>
-											<p className="text-sm text-gray-300">
-												{movie.releaseYear} •{" "}
-												{movie.rating}
-											</p>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
-					</>
-				)}
-			</div>{" "}
+			</div>
+
 			{selectedMovie && (
 				<MovieDetails
 					movie={{
@@ -444,6 +324,8 @@ const MoviesPage = () => {
 					}
 				/>
 			)}
+
+			{/* MFA Prompts */}
 			{showMfaPrompt && (
 				<div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
 					<div className="bg-gray-800 p-6 rounded-lg max-w-sm text-white text-center space-y-4">
@@ -472,6 +354,7 @@ const MoviesPage = () => {
 					</div>
 				</div>
 			)}
+
 			{showMfaSetup && (
 				<div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
 					<div className="bg-gray-800 p-6 rounded-lg max-w-sm text-white text-center space-y-4">
@@ -488,7 +371,6 @@ const MoviesPage = () => {
 						<p className="text-sm text-gray-400">
 							Secret: <code>{mfaSecret}</code>
 						</p>
-
 						<input
 							type="text"
 							placeholder="Enter 6-digit code"
@@ -496,7 +378,6 @@ const MoviesPage = () => {
 							onChange={(e) => setMfaCode(e.target.value)}
 							className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400"
 						/>
-
 						<div className="flex justify-center space-x-4">
 							<button
 								className="bg-green-600 px-4 py-2 rounded"
@@ -515,7 +396,6 @@ const MoviesPage = () => {
 											}),
 										}
 									);
-
 									const result = await res.json();
 									if (res.ok) {
 										alert("✅ MFA Enabled Successfully!");
